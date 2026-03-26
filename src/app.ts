@@ -3,13 +3,34 @@ import express from "express";
 import createError from "http-errors";
 import logger from "morgan";
 import indexRouter from "./routes/index.js";
+import { fromNodeHeaders, toNodeHandler } from "better-auth/node";
 import type { Request, Response, NextFunction } from "express";
 import type { HttpError } from "http-errors";
+import { auth } from "./lib/auth.js";
+import cors from "cors";
 
 const app = express();
 const logFormat = env.NODE_ENV === "production" ? "combined" : "dev";
 
 app.use(logger(logFormat));
+// Configure CORS middleware
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    credentials: true,
+  }),
+);
+
+app.all("/api/auth/*", toNodeHandler(auth));
+
+app.use("/auth/me", async (req, res) => {
+  const session = await auth.api.getSession({
+    headers: fromNodeHeaders(req.headers),
+  });
+  return res.json(session);
+});
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
