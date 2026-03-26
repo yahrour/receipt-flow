@@ -1,0 +1,15 @@
+node_modules/
+dist/
+
+.env*
+!.env.example
+
+npm-debug.log*
+logs/
+*.log
+
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
