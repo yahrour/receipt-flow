@@ -11,6 +11,8 @@ const envSchema = z.object({
   DB_USER: z.string(),
   DB_PASSWORD: z.string(),
   DB_NAME: z.string(),
+  GEMINI_API_KEY: z.string(),
+  FRONTEND_URL: z.url(),
 });
 
 // Validate process.env against the schema
