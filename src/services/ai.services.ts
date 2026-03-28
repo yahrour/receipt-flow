@@ -8,8 +8,13 @@ import fs from "fs/promises";
 import { PDFDocument } from "pdf-lib";
 
 const genAI = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
-const prompt = `Extract the receipt data accurately. 
-Return merchant name, total amount, date, and all line items with their prices.`;
+// const prompt = `Extract the receipt data accurately.
+// Return merchant name, total amount, date, category, and all line items with their prices.`;
+const prompt = `Extract the receipt data accurately and return the following fields:
+- merchant: the store or business name
+- total: the total amount paid
+- date: the date of the transaction (ISO 8601 format)
+- category: classify the receipt into one of: groceries, restaurant, transport, entertainment, health, shopping, utilities, travel, or other`;
 
 export const analyzeReceiptService = async (
   filePath: string,
