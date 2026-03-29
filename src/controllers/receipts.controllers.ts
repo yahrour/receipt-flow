@@ -2,42 +2,112 @@ import type { NextFunction, Request, Response } from "express";
 import fs from "fs/promises";
 import createError from "http-errors";
 import z from "zod";
+import { receiptSchema } from "../schema/index.js";
+import { analyzeReceiptService } from "../services/receipt.services.js";
+import {
+  deleteReceiptService,
+  getReceiptService,
+  getReceiptsService,
+  saveReceiptService,
+  updateReceiptService,
+} from "../services/receipt.services.js";
 import { ok } from "../utils/response.js";
-import type { receiptSchema } from "../schema/index.js";
-import { analyzeReceiptService } from "../services/ai.services.js";
 
-type ReceiptType = z.infer<typeof receiptSchema>;
+export type ReceiptType = z.infer<typeof receiptSchema>;
 
-export const analyzeReceiptController = async (
+export async function analyzeReceiptController(
   req: Request,
   res: Response,
   next: NextFunction,
-) => {
-  let tmpPath: string | undefined;
-
+) {
   try {
-    if (!req.file) throw createError(400, "No Receipt provided");
-    tmpPath = req.file.path;
-
     const data: ReceiptType = await analyzeReceiptService(
-      req.file.path,
-      req.file.mimetype,
+      req.file?.path,
+      req.file?.mimetype,
     );
-
     return ok(res, data, "Data extracted successfully", 200);
   } catch (e) {
     if (e instanceof z.ZodError) {
-      return next(createError(422, "Failed to extract to receipt data"));
+      return next(createError(422, "Failed to extract receipt data"));
     }
     const isHttpError = createError.isHttpError(e);
     return next(
       isHttpError ? e : createError(500, "Failed to process receipt"),
     );
   } finally {
-    if (tmpPath) {
+    if (req.file?.path) {
       await fs
-        .unlink(tmpPath)
+        .unlink(req.file.path)
         .catch((err) => console.error("Cleanup error:", err));
     }
   }
-};
+}
+
+export async function getReceiptsController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const result = await getReceiptsService(req.user.id);
+    return ok(res, result, "Receipts fetched successfully", 200);
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function getReceiptController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const result = await getReceiptService(req.params.id, req.user.id);
+    return ok(res, result, "Receipt fetched successfully", 200);
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function saveReceiptController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const result = await saveReceiptService(req.body, req.user.id);
+    return ok(res, result, "Receipt saved successfully", 201);
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function updateReceiptController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    const result = await updateReceiptService(
+      req.params.id,
+      req.body,
+      req.user.id,
+    );
+    return ok(res, result, "Receipt updated successfully", 200);
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function deleteReceiptController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  try {
+    await deleteReceiptService(req.params.id, req.user.id);
+    return ok(res, null, "Receipt deleted successfully", 200);
+  } catch (e) {
+    next(e);
+  }
+}

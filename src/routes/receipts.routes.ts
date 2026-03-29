@@ -4,7 +4,15 @@ import { upload } from "../lib/multer.js";
 import createError from "http-errors";
 import z from "zod";
 import { promisify } from "util";
-import { analyzeReceiptController } from "../controllers/receipts.controllers.js";
+import {
+  analyzeReceiptController,
+  deleteReceiptController,
+  getReceiptController,
+  getReceiptsController,
+  saveReceiptController,
+  updateReceiptController,
+} from "../controllers/receipts.controllers.js";
+import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 export const receiptsRouter = express.Router();
 
@@ -27,4 +35,14 @@ const uploadMiddleware = async (
   }
 };
 
-receiptsRouter.post("/analyze", uploadMiddleware, analyzeReceiptController);
+receiptsRouter.post(
+  "/analyze",
+  authMiddleware,
+  uploadMiddleware,
+  analyzeReceiptController,
+);
+receiptsRouter.get("/", authMiddleware, getReceiptsController);
+receiptsRouter.get("/:id", authMiddleware, getReceiptController);
+receiptsRouter.post("/", authMiddleware, saveReceiptController);
+receiptsRouter.put("/:id", authMiddleware, updateReceiptController);
+receiptsRouter.delete("/:id", authMiddleware, deleteReceiptController);

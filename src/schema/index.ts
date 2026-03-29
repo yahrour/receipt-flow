@@ -1,9 +1,9 @@
 import z from "zod";
 
 export const receiptSchema = z.object({
-  merchant: z.string(),
-  total: z.number().positive(),
-  date: z.string(),
+  merchant: z.string().trim(),
+  amount: z.number().positive(),
+  date: z.string().trim(),
   category: z.enum([
     "groceries",
     "restaurant",
@@ -15,5 +15,5 @@ export const receiptSchema = z.object({
     "travel",
     "other",
   ]),
-  currencySymbol: z.string(),
+  currencySymbol: z.string().trim(),
 });
