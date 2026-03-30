@@ -10,6 +10,7 @@ import cors from "cors";
 import { healthRouter } from "./routes/health.routes.js";
 import { fail } from "./utils/response.js";
 import { receiptsRouter } from "./routes/receipts.routes.js";
+import { analyticsRouter } from "./routes/analytics.routes.js";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/api/receipts", receiptsRouter);
+app.use("/api/analytics", analyticsRouter);
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {
