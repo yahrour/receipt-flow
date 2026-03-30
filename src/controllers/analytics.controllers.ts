@@ -1,32 +1,83 @@
 import type { NextFunction, Request, Response } from "express";
-import createError from "http-errors";
 import {
-  getSpendingByCategoryService,
-  getSpendingByMonthService,
-  getSummaryService,
+  getCategoriesSpending,
+  getYearlySpending,
+  getMonthlySummary,
 } from "../services/analytics.services.js";
 import { ok } from "../utils/response.js";
+import createError from "http-errors";
 
-export async function analyticsController(
+export async function monthlySummaryController(
   req: Request,
   res: Response,
   next: NextFunction,
 ) {
-  try {
-    const userId = "123"; // req.user.id
-    const [summary, byCategory, byMonth] = await Promise.all([
-      getSummaryService(userId),
-      getSpendingByCategoryService(userId),
-      getSpendingByMonthService(userId),
-    ]);
+  const userId = "123"; // req.user.id
+  const month = req.query.month
+    ? Number(req.query.month)
+    : new Date().getMonth() + 1;
+  const year = req.query.year
+    ? Number(req.query.year)
+    : new Date().getFullYear();
 
-    return ok(
-      res,
-      { summary, byCategory, byMonth },
-      "Analytics fetched successfully",
-      200,
-    );
-  } catch {
-    next(createError(500, "Failed to calculate analytics"));
+  try {
+    if (isNaN(month) || month < 1 || month > 12) {
+      throw createError(400, "Invalid month. Must be 1-12");
+    }
+    if (isNaN(year) || year < 2000) {
+      throw createError(400, "Invalid year");
+    }
+    const result = await getMonthlySummary(userId, month, year);
+    return ok(res, result, "Analytics summary fetched successfully", 200);
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function yearlySpendingController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  const userId = "123"; // req.user.id
+  const year = req.query.year
+    ? Number(req.query.year)
+    : new Date().getFullYear();
+
+  try {
+    if (isNaN(year) || year < 2000) {
+      throw createError(400, "Invalid year");
+    }
+    const result = await getYearlySpending(userId, year);
+    return ok(res, result, "Analytics summary fetched successfully", 200);
+  } catch (e) {
+    next(e);
+  }
+}
+
+export async function categoriesSpendingController(
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) {
+  const userId = "123"; // req.user.id
+  const month = req.query.month
+    ? Number(req.query.month)
+    : new Date().getMonth() + 1;
+  const year = req.query.year
+    ? Number(req.query.year)
+    : new Date().getFullYear();
+
+  try {
+    if (isNaN(month) || month < 1 || month > 12) {
+      throw createError(400, "Invalid month. Must be 1-12");
+    }
+    if (isNaN(year) || year < 2000) {
+      throw createError(400, "Invalid year");
+    }
+    const result = await getCategoriesSpending(userId, month, year);
+    return ok(res, result, "Analytics summary fetched successfully", 200);
+  } catch (e) {
+    next(e);
   }
 }
