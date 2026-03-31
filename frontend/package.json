@@ -14,11 +14,7 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "frontend/src/**/*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
-    ],
-    "backend/src/**/*.ts": [
+    "src/**/*.{ts,tsx}": [
       "eslint --fix",
       "prettier --write"
     ]
