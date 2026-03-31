@@ -21,13 +21,11 @@ export default defineConfig(
       },
     },
     rules: {
-      // 2. Integration: Prettier errors show up in ESLint
       "prettier/prettier": "error",
       "@typescript-eslint/no-unused-vars": "error",
       "no-console": "off",
       "prefer-arrow-callback": "error",
     },
   },
-  // 3. This MUST be last to disable conflicting rules
   prettierConfig,
 );
