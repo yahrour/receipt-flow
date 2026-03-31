@@ -15,8 +15,8 @@
   },
   "lint-staged": {
     "src/**/*.{ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
+      "npm --prefix ./ run lint:fix",
+      "npm --prefix ./ run format"
     ]
   },
   "dependencies": {
