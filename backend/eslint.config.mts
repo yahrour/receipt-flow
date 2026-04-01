@@ -26,6 +26,8 @@ export default defineConfig(
       "no-console": "off",
       "prefer-arrow-callback": "error",
     },
+
+    ignores: ["scripts/init.ts", "node_modules/", "dist/"],
   },
   prettierConfig,
 );

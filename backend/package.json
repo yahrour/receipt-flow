@@ -17,11 +17,11 @@
   "type": "module",
   "lint-staged": {
     "*.{js,ts}": [
-      "eslint",
-      "prettier --check"
+      "npm --prefix ./ run lint:fix",
+      "npm --prefix ./ run format"
     ],
     "*.{json,yml,yaml,md}": [
-      "prettier --check"
+      "npm --prefix ./ run format"
     ]
   },
   "dependencies": {
