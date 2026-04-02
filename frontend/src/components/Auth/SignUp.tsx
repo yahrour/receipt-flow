@@ -6,11 +6,12 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { GoogleAuthButton } from "./GoogleAuthButton";
 import { authClient } from "@/lib/auth";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { env } from "@/config/env";
+import { useQuery } from "@tanstack/react-query";
 
 type SignUpSchemaType = z.infer<typeof signUpSchema>;
 type MessageType = {
@@ -18,6 +19,10 @@ type MessageType = {
   message: string;
 };
 export default function SignUp() {
+  const { data: session, isLoading } = useQuery({
+    queryKey: ["session"],
+    queryFn: () => authClient.getSession(),
+  });
   const form = useForm<SignUpSchemaType>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -27,7 +32,17 @@ export default function SignUp() {
       confirmPassword: "",
     },
   });
+  const navigate = useNavigate();
   const [message, setMessage] = useState<MessageType | null>(null);
+
+  useEffect(() => {
+    if (session?.data?.user) {
+      void navigate("/account", { replace: true });
+    }
+  }, [session, navigate]);
+
+  if (isLoading) return <h1>Loading ...</h1>;
+  if (session?.data?.user) return null;
 
   const onSubmit = async (data: SignUpSchemaType) => {
     const { error } = await authClient.signUp.email(
@@ -40,19 +55,17 @@ export default function SignUp() {
       {
         onSuccess: () => {
           form.reset();
-          console.log("SignedUP successfully");
         },
       },
     );
 
     if (error === null) {
       setMessage({
-        message: "Account created. Please verify via email.",
+        message:
+          "If this email is not registered, a verification link has been sent.",
         success: true,
       });
-    }
-
-    if (error !== null) {
+    } else {
       switch (error?.code) {
         case "PASSWORD_TOO_SHORT":
           form.setError("password", {
@@ -76,8 +89,8 @@ export default function SignUp() {
   };
 
   return (
-    <div className="flex flex-col gap-8 max-w-lg mx-auto">
-      <h1>Create your account</h1>
+    <div className="flex flex-col gap-8 w-full max-w-md absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
+      <h1 className="text-2xl font-medium">Create your account</h1>
       <div className="flex flex-col gap-6">
         <GoogleAuthButton />
         <div className="flex items-center gap-3">
