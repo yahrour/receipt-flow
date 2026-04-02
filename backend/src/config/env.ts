@@ -13,6 +13,9 @@ const envSchema = z.object({
   DB_NAME: z.string(),
   GEMINI_API_KEY: z.string(),
   FRONTEND_URL: z.url(),
+  GOOGLE_CLIENT_ID: z.string(),
+  GOOGLE_CLIENT_SECRET: z.string(),
+  RESEND_API_KEY: z.string(),
 });
 
 // Validate process.env against the schema
