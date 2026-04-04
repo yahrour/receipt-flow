@@ -34,7 +34,7 @@ export function GoogleAuthButton() {
     <Button
       type="button"
       variant="outline"
-      className="w-full h-10 justify-center gap-3 rounded-md border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
+      className="w-full h-10 justify-center gap-3 rounded-4xl border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground cursor-pointer"
       // eslint-disable-next-line @typescript-eslint/no-misused-promises
       onClick={handleGoogleAuth}
     >

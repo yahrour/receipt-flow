@@ -12,6 +12,13 @@ import { authClient } from "@/lib/auth";
 import { useEffect, useState } from "react";
 import { env } from "@/config/env";
 import { useQuery } from "@tanstack/react-query";
+import { EyeOffIcon } from "lucide-react";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../ui/input-group";
+import { Spinner } from "../ui/spinner";
 
 type SignInSchemaType = z.infer<typeof signInSchema>;
 
@@ -29,8 +36,10 @@ export default function SignUp() {
   });
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: SignInSchemaType) => {
+    await new Promise((res) => setTimeout(res, 5000));
     await authClient.signIn.email(
       {
         email: data.email,
@@ -49,12 +58,12 @@ export default function SignUp() {
     }
   }, [session, navigate]);
 
-  if (isLoading) return <h1>Loading ...</h1>;
-  if (session?.data?.user) return null;
+  if (isLoading) return <Spinner className="size-8" />;
+  if (session?.data?.user) void navigate("/account", { replace: true });
 
   return (
-    <div className="flex flex-col gap-8 w-full max-w-md absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
-      <h1 className="text-2xl font-medium">Sign In to Receipt Flow</h1>
+    <div className="min-h-162.5 flex flex-col gap-8 w-full max-w-sm">
+      <h1 className="text-2xl">Sign In to ReceiptFlow</h1>
       <div className="flex flex-col gap-6">
         <GoogleAuthButton />
         <div className="flex items-center gap-3">
@@ -67,9 +76,9 @@ export default function SignUp() {
         <form
           // eslint-disable-next-line @typescript-eslint/no-misused-promises
           onSubmit={form.handleSubmit(onSubmit)}
-          className="flex flex-col gap-4"
+          className="flex flex-col gap-8"
         >
-          <FieldGroup className="flex flex-col gap-4">
+          <FieldGroup className="flex flex-col gap-6">
             <Controller
               name="email"
               control={form.control}
@@ -93,14 +102,33 @@ export default function SignUp() {
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <Input
-                    {...field}
-                    id="password"
-                    type="password"
-                    aria-invalid={fieldState.invalid}
-                    autoComplete="off"
-                  />
+                  <div className="flex justify-between items-center">
+                    <FieldLabel htmlFor="password">Password</FieldLabel>
+                    <Link
+                      to="/forgot-password"
+                      className="text-xs text-right text-muted-foreground hover:text-foreground"
+                    >
+                      Forgot ?
+                    </Link>
+                  </div>
+                  <InputGroup>
+                    <InputGroupInput
+                      {...field}
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      aria-invalid={fieldState.invalid}
+                      autoComplete="off"
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        <EyeOffIcon />
+                      </Button>
+                    </InputGroupAddon>
+                  </InputGroup>
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -109,16 +137,20 @@ export default function SignUp() {
             />
           </FieldGroup>
           {error && <p className="text-red-500 text-xs font-normal">{error}</p>}
-          <Button type="submit" className="w-full py-5 cursor-pointer">
-            Submit
+          <Button
+            type="submit"
+            className="w-full py-5 cursor-pointer bg-black text-white hover:bg-black/80"
+            disabled={form.formState.isSubmitting || !form.formState.isValid}
+          >
+            {form.formState.isSubmitting ? <Spinner /> : "Sign In"}
           </Button>
         </form>
       </div>
       <Separator />
       <div className="text-sm text-center space-x-2">
-        <span className="text-gray-500">Don't have an account?</span>
+        <span className="text-gray-500">No account?</span>
         <Link to="/signUp" className="hover:underline">
-          Sign Up
+          Create one
         </Link>
       </div>
     </div>

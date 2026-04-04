@@ -12,6 +12,13 @@ import { authClient } from "@/lib/auth";
 import { useEffect, useState } from "react";
 import { env } from "@/config/env";
 import { useQuery } from "@tanstack/react-query";
+import { EyeOffIcon } from "lucide-react";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "../ui/input-group";
+import { Spinner } from "../ui/spinner";
 
 type SignUpSchemaType = z.infer<typeof signUpSchema>;
 type MessageType = {
@@ -29,20 +36,17 @@ export default function SignUp() {
       name: "",
       email: "",
       password: "",
-      confirmPassword: "",
     },
   });
   const navigate = useNavigate();
   const [message, setMessage] = useState<MessageType | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
     if (session?.data?.user) {
       void navigate("/account", { replace: true });
     }
   }, [session, navigate]);
-
-  if (isLoading) return <h1>Loading ...</h1>;
-  if (session?.data?.user) return null;
 
   const onSubmit = async (data: SignUpSchemaType) => {
     const { error } = await authClient.signUp.email(
@@ -88,9 +92,12 @@ export default function SignUp() {
     }
   };
 
+  if (isLoading) return <Spinner className="size-8" />;
+  if (session?.data?.user) void navigate("/account", { replace: true });
+
   return (
-    <div className="flex flex-col gap-8 w-full max-w-md absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">
-      <h1 className="text-2xl font-medium">Create your account</h1>
+    <div className="min-h-162.5 flex flex-col gap-8 w-full max-w-sm">
+      <h1 className="text-2xl">Create your account</h1>
       <div className="flex flex-col gap-6">
         <GoogleAuthButton />
         <div className="flex items-center gap-3">
@@ -148,34 +155,24 @@ export default function SignUp() {
               render={({ field, fieldState }) => (
                 <Field data-invalid={fieldState.invalid}>
                   <FieldLabel htmlFor="password">Password</FieldLabel>
-                  <Input
-                    {...field}
-                    id="password"
-                    type="password"
-                    aria-invalid={fieldState.invalid}
-                    autoComplete="off"
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
-                  )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="confirmPassword"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="confirmPassword">
-                    Confirm Password
-                  </FieldLabel>
-                  <Input
-                    {...field}
-                    id="confirmPassword"
-                    type="password"
-                    aria-invalid={fieldState.invalid}
-                    autoComplete="off"
-                  />
+                  <InputGroup>
+                    <InputGroupInput
+                      {...field}
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      aria-invalid={fieldState.invalid}
+                      autoComplete="off"
+                    />
+                    <InputGroupAddon align="inline-end">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => setShowPassword(!showPassword)}
+                      >
+                        <EyeOffIcon />
+                      </Button>
+                    </InputGroupAddon>
+                  </InputGroup>
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -193,8 +190,12 @@ export default function SignUp() {
               {message.message}
             </p>
           )}
-          <Button type="submit" className="w-full py-5 cursor-pointer">
-            Submit
+          <Button
+            type="submit"
+            className="w-full py-5 cursor-pointer bg-black text-white hover:bg-black/80"
+            disabled={form.formState.isSubmitting || !form.formState.isValid}
+          >
+            {form.formState.isSubmitting ? <Spinner /> : "Sign Up"}
           </Button>
         </form>
       </div>

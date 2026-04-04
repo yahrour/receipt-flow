@@ -2,31 +2,45 @@ import { LogIn, UserCircle, UserPlus } from "lucide-react";
 import { Button } from "../ui/button";
 import { authClient } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
+type UserSession =
+  | {
+      id: string;
+      createdAt: Date;
+      updatedAt: Date;
+      email: string;
+      emailVerified: boolean;
+      name: string;
+      image?: string | null | undefined;
+    }
+  | undefined;
 export default function Account() {
-  return (
-    <div className="space-y-4">
-      <h1>Account</h1>
-      <Header />
-      <SignMethods />
-    </div>
-  );
-}
-function Header() {
   const { data } = useQuery({
     queryKey: ["session"],
     queryFn: () => authClient.getSession(),
   });
   const session = data?.data?.user;
 
+  return (
+    <div className="space-y-8 max-w-xl mx-auto">
+      <h1 className="text-3xl font-medium">Account</h1>
+      <div className="space-y-4">
+        <Header session={session} />
+        <SignMethods session={session} />
+      </div>
+    </div>
+  );
+}
+
+function Header({ session }: { session: UserSession }) {
   if (!session) {
     return (
-      <div className="bg-white border flex items-center gap-4 p-4 rounded-2xl">
+      <div className="bg-white flex items-center gap-4 p-4 rounded-2xl">
         <div className="bg-gray-100 p-4 rounded-full">
           <UserCircle size={24} className="text-gray-400 stroke-2" />
         </div>
-        <div>
+        <div className="space-y-1">
           <p className="text-sm font-medium">Not signed in</p>
           <p className="text-xs text-gray-500">Sign in to sync your receipts</p>
         </div>
@@ -34,35 +48,70 @@ function Header() {
     );
   }
   return (
-    <div className="bg-white border">
-      {session?.image ? (
-        <img src={session.image} alt="profile" />
+    <div className="bg-white flex items-center gap-4 p-4 rounded-2xl">
+      {session.image ? (
+        <img
+          src={session.image}
+          alt="profile"
+          className="rounded-full size-14 stroke-2"
+        />
       ) : (
-        <UserCircle />
+        <div className="bg-gray-100 p-4 rounded-full">
+          <UserCircle size={24} className="text-gray-400 stroke-2" />
+        </div>
       )}
-      <div>
-        <p>{session.name}</p>
-        <p>{session.email}</p>
+      <div className="space-y-1">
+        <p className="text-sm font-medium">{session.name}</p>
+        <p className="text-sm text-gray-500">{session.email}</p>
       </div>
     </div>
   );
 }
 
-function SignMethods() {
+function SignMethods({ session }: { session: UserSession }) {
+  const navigate = useNavigate();
+  const handleSignOut = async () => {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          void navigate("/signIn");
+        },
+      },
+    });
+  };
+  if (!session) {
+    return (
+      <div className="w-full flex justify-between items-center gap-4">
+        <Link to={"/signIn"} className="flex-1">
+          <Button className="py-5 cursor-pointer w-full">
+            <LogIn />
+            Sign In
+          </Button>
+        </Link>
+        <Link to={"/signUp"} className="flex-1">
+          <Button
+            className="bg-white border shadow-none py-5 cursor-pointer w-full"
+            variant="outline"
+          >
+            <UserPlus />
+            Sign Up
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full flex justify-between items-center gap-4">
-      <Link to={"/signIn"} className="flex-1">
-        <Button className="py-5 cursor-pointer w-full">
-          <LogIn />
-          Sign In
-        </Button>
-      </Link>
-      <Link to={"/signUp"} className="flex-1">
-        <Button className="py-5 cursor-pointer w-full" variant="outline">
-          <UserPlus />
-          Sign Up
-        </Button>
-      </Link>
+      <Button
+        className="py-5 cursor-pointer w-full"
+        variant="destructive"
+        // eslint-disable-next-line @typescript-eslint/no-misused-promises
+        onClick={handleSignOut}
+      >
+        <LogIn />
+        Sign Out
+      </Button>
     </div>
   );
 }
