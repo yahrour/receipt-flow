@@ -7,7 +7,7 @@ import { Button } from "../ui/button";
 import { Link, useNavigate } from "react-router";
 import { authClient } from "@/lib/auth";
 import { useState } from "react";
-import { EyeOffIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import {
   InputGroup,
   InputGroupAddon,
@@ -157,7 +157,7 @@ export default function ResetPassword() {
                           setShowConfirmPassword(!showConfirmPassword)
                         }
                       >
-                        <EyeOffIcon />
+                        {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                       </Button>
                     </InputGroupAddon>
                   </InputGroup>

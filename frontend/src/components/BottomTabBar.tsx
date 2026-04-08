@@ -11,15 +11,15 @@ const tabs = [
 ];
 
 export function BottomTabBar() {
-  const location = useLocation();
-  const activePath =
-    tabs.find((t) => t.path === location.pathname)?.path ?? "/";
+  const { pathname } = useLocation();
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 mx-auto w-full max-w-xl">
       <nav className="bg-white mx-3 mb-3 flex items-center justify-between rounded-xl backdrop-blur-xl border border-border/50 shadow-(--shadow-soft) px-2 py-1.5">
         {tabs.map((tab) => {
-          const isActive = activePath === tab.path;
+          const isActive =
+            pathname === tab.path ||
+            (tab.path !== "/" && location.pathname.startsWith(tab.path));
           const Icon = tab.icon;
 
           return (

@@ -33,3 +33,31 @@ export const resetPasswordSchema = z
     error: "Password don't match",
     path: ["confirmPassword"],
   });
+
+export const updateEmailSchema = z.object({
+  newEmail: z.email(),
+  currentPassword: z
+    .string()
+    .min(1, "Please set a password")
+    .min(8, "password too short"),
+});
+
+export const updatePasswordSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .min(1, "Please set the password")
+      .min(8, "password too short"),
+    newPassword: z
+      .string()
+      .min(1, "please set a new password")
+      .min(8, "password too short"),
+    confirmNewPassword: z
+      .string()
+      .min(1, "please set a password")
+      .min(8, "password too short"),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    error: "Password don't match",
+    path: ["confirmNewPassword"],
+  });

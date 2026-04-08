@@ -12,7 +12,7 @@ import { authClient } from "@/lib/auth";
 import { useEffect, useState } from "react";
 import { env } from "@/config/env";
 import { useQuery } from "@tanstack/react-query";
-import { EyeOffIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import {
   InputGroup,
   InputGroupAddon,
@@ -169,7 +169,7 @@ export default function SignUp() {
                         size="icon"
                         onClick={() => setShowPassword(!showPassword)}
                       >
-                        <EyeOffIcon />
+                        {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                       </Button>
                     </InputGroupAddon>
                   </InputGroup>

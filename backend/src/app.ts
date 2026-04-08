@@ -11,6 +11,7 @@ import { healthRouter } from "./routes/health.routes.js";
 import { fail } from "./utils/response.js";
 import { receiptsRouter } from "./routes/receipts.routes.js";
 import { analyticsRouter } from "./routes/analytics.routes.js";
+import { userRouter } from "./routes/user.routes.js";
 
 const app = express();
 
@@ -30,6 +31,8 @@ app.all("/api/auth/*", toNodeHandler(auth));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+app.use("/api/users", userRouter);
 
 app.use("/api/receipts", receiptsRouter);
 app.use("/api/analytics", analyticsRouter);

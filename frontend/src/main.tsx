@@ -14,6 +14,7 @@ import SignUp from "./components/Auth/SignUp";
 import { AuthLayout } from "./layouts/AuthLayout";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
+import Security from "./components/Account/Security/Security";
 
 const router = createBrowserRouter([
   {
@@ -22,7 +23,11 @@ const router = createBrowserRouter([
       { path: "/", Component: Home },
       { path: "/add", Component: Add },
       { path: "/dashboard", Component: Dashboard },
-      { path: "/account", Component: Account },
+      {
+        path: "/account",
+        Component: Account,
+      },
+      { path: "/account/security", Component: Security },
     ],
   },
   {
@@ -48,7 +53,7 @@ const router = createBrowserRouter([
   },
 ]);
 
-const queryClient = new QueryClient();
+export const queryClient = new QueryClient();
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

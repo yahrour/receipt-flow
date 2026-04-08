@@ -17,3 +17,11 @@ export const receiptSchema = z.object({
   ]),
   currencySymbol: z.string().trim(),
 });
+
+export const updateEmailSchema = z.object({
+  newEmail: z.email(),
+  currentPassword: z
+    .string()
+    .min(1, "Please set a password")
+    .min(8, "password too short"),
+});

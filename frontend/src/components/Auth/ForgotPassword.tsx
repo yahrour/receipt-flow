@@ -6,10 +6,9 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { Separator } from "../ui/separator";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 import { authClient } from "@/lib/auth";
-import { useEffect, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 import { env } from "@/config/env";
 import { Spinner } from "../ui/spinner";
 
@@ -20,17 +19,12 @@ type MessageType = {
 };
 
 export default function ForgotPassword() {
-  const { data: session, isLoading } = useQuery({
-    queryKey: ["session"],
-    queryFn: () => authClient.getSession(),
-  });
   const form = useForm<ForgotPasswordSchemaType>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
     },
   });
-  const navigate = useNavigate();
   const [message, setMessage] = useState<MessageType | null>(null);
 
   const onSubmit = async (formData: ForgotPasswordSchemaType) => {
@@ -67,15 +61,6 @@ export default function ForgotPassword() {
       });
     }
   };
-
-  useEffect(() => {
-    if (session?.data?.user) {
-      void navigate("/account", { replace: true });
-    }
-  }, [session, navigate]);
-
-  if (isLoading) return <Spinner className="size-8" />;
-  if (session?.data?.user) void navigate("/account", { replace: true });
 
   return (
     // <div className="flex flex-col gap-8 w-full max-w-md absolute left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%]">

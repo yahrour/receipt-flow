@@ -1,4 +1,10 @@
-import { LogIn, UserCircle, UserPlus } from "lucide-react";
+import {
+  ChevronRight,
+  LogIn,
+  ShieldCogCorner,
+  UserCircle,
+  UserPlus,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import { authClient } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
@@ -28,6 +34,7 @@ export default function Account() {
       <div className="space-y-4">
         <Header session={session} />
         <SignMethods session={session} />
+        <Security />
       </div>
     </div>
   );
@@ -113,5 +120,26 @@ function SignMethods({ session }: { session: UserSession }) {
         Sign Out
       </Button>
     </div>
+  );
+}
+
+function Security() {
+  return (
+    <Link
+      to={"/account/security"}
+      className="bg-white hover:bg-white/50 transition group flex items-center gap-4 p-4 rounded-2xl"
+    >
+      <div className="bg-gray-100 p-2 rounded-full">
+        <ShieldCogCorner size={18} className="text-gray-400 stroke-2" />
+      </div>
+      <div className="space-y-1">
+        <p className="text-sm font-medium">Security</p>
+        <p className="text-xs text-gray-500">Password, email & sessions</p>
+      </div>
+      <ChevronRight
+        className="text-gray-400 ml-auto group-hover:translate-x-1 transition-all"
+        size={18}
+      />
+    </Link>
   );
 }

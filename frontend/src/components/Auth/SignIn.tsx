@@ -12,7 +12,7 @@ import { authClient } from "@/lib/auth";
 import { useEffect, useState } from "react";
 import { env } from "@/config/env";
 import { useQuery } from "@tanstack/react-query";
-import { EyeOffIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon } from "lucide-react";
 import {
   InputGroup,
   InputGroupAddon,
@@ -39,7 +39,6 @@ export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
 
   const onSubmit = async (data: SignInSchemaType) => {
-    await new Promise((res) => setTimeout(res, 5000));
     await authClient.signIn.email(
       {
         email: data.email,
@@ -125,7 +124,7 @@ export default function SignUp() {
                         size="icon"
                         onClick={() => setShowPassword(!showPassword)}
                       >
-                        <EyeOffIcon />
+                        {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                       </Button>
                     </InputGroupAddon>
                   </InputGroup>
