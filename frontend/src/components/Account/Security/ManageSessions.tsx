@@ -7,6 +7,7 @@ import { timeAgo } from "@/utils/time";
 import { Button } from "@/components/ui/button";
 import { queryClient } from "@/main";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AnimatePresence, motion } from "framer-motion";
 
 export function ManageSessions({ activePanel, setActivePanel }: Props) {
   const { data: sessions, isLoading } = useQuery({
@@ -36,13 +37,23 @@ export function ManageSessions({ activePanel, setActivePanel }: Props) {
           </p>
         </div>
       </div>
-      {activePanel === "session" && (
-        <div className="w-full border-t bg-white rounded-bl-2xl rounded-br-2xl">
-          {sessions?.data?.map((session) => (
-            <SessionItem key={session.id} session={session} />
-          ))}
-        </div>
-      )}
+      <AnimatePresence>
+        {activePanel === "session" && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            style={{ overflow: "hidden" }}
+          >
+            <div className="w-full border-t bg-white rounded-bl-2xl rounded-br-2xl">
+              {sessions?.data?.map((session) => (
+                <SessionItem key={session.id} session={session} />
+              ))}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

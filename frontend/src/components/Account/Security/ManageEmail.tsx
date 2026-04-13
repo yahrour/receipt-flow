@@ -23,6 +23,7 @@ import type z from "zod";
 import { useQuery } from "@tanstack/react-query";
 import { authClient } from "@/lib/auth";
 import { Skeleton } from "@/components/ui/skeleton";
+import { AnimatePresence, motion } from "framer-motion";
 
 type UpdateEmailSchemaType = z.infer<typeof updateEmailSchema>;
 type MessageType = {
@@ -91,94 +92,104 @@ export function ManageEmail({ activePanel, setActivePanel }: Props) {
           <p className="text-xs text-gray-500">{session?.data?.user.email}</p>
         </div>
       </div>
-      {activePanel === "email" && (
-        <form
-          // eslint-disable-next-line @typescript-eslint/no-misused-promises
-          onSubmit={form.handleSubmit(onSubmit)}
-          className="w-full bg-white border-t rounded-bl-2xl rounded-br-2xl p-4 flex flex-col gap-4"
-        >
-          <FieldGroup className="flex flex-col gap-4">
-            <Controller
-              name="newEmail"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="newEmail">New email</FieldLabel>
-                  <Input
-                    {...field}
-                    id="newEmail"
-                    aria-invalid={fieldState.invalid}
-                    autoComplete="off"
-                  />
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
+      <AnimatePresence>
+        {activePanel === "email" && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            style={{ overflow: "hidden" }}
+          >
+            <form
+              // eslint-disable-next-line @typescript-eslint/no-misused-promises
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="w-full bg-white border-t rounded-bl-2xl rounded-br-2xl p-4 flex flex-col gap-4"
+            >
+              <FieldGroup className="flex flex-col gap-4">
+                <Controller
+                  name="newEmail"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="newEmail">New email</FieldLabel>
+                      <Input
+                        {...field}
+                        id="newEmail"
+                        aria-invalid={fieldState.invalid}
+                        autoComplete="off"
+                      />
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
                   )}
-                </Field>
-              )}
-            />
-            <Controller
-              name="currentPassword"
-              control={form.control}
-              render={({ field, fieldState }) => (
-                <Field data-invalid={fieldState.invalid}>
-                  <FieldLabel htmlFor="currentPassword">
-                    Current password
-                  </FieldLabel>
-                  <InputGroup>
-                    <InputGroupInput
-                      {...field}
-                      id="currentPassword"
-                      type={showPassword ? "text" : "password"}
-                      aria-invalid={fieldState.invalid}
-                      autoComplete="off"
-                    />
-                    <InputGroupAddon align="inline-end">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => setShowPassword(!showPassword)}
-                      >
-                        {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-                      </Button>
-                    </InputGroupAddon>
-                  </InputGroup>
-                  {fieldState.invalid && (
-                    <FieldError errors={[fieldState.error]} />
+                />
+                <Controller
+                  name="currentPassword"
+                  control={form.control}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid}>
+                      <FieldLabel htmlFor="currentPassword">
+                        Current password
+                      </FieldLabel>
+                      <InputGroup>
+                        <InputGroupInput
+                          {...field}
+                          id="currentPassword"
+                          type={showPassword ? "text" : "password"}
+                          aria-invalid={fieldState.invalid}
+                          autoComplete="off"
+                        />
+                        <InputGroupAddon align="inline-end">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => setShowPassword(!showPassword)}
+                          >
+                            {showPassword ? <EyeOffIcon /> : <EyeIcon />}
+                          </Button>
+                        </InputGroupAddon>
+                      </InputGroup>
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
                   )}
-                </Field>
+                />
+              </FieldGroup>
+              {message && (
+                <p
+                  className={`text-sm ${message.success ? "text-green-500" : "text-red-500"}`}
+                >
+                  {message.message}
+                </p>
               )}
-            />
-          </FieldGroup>
-          {message && (
-            <p
-              className={`text-sm ${message.success ? "text-green-500" : "text-red-500"}`}
-            >
-              {message.message}
-            </p>
-          )}
-          <div className="flex gap-2 items-center justify-end">
-            <Button
-              type="button"
-              className="py-5 cursor-pointer w-[30%]"
-              disabled={form.formState.isSubmitting}
-              variant="secondary"
-              onClick={() => {
-                form.reset();
-                setActivePanel(null);
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              className="py-5 cursor-pointer bg-black text-white hover:bg-black/80 w-[30%]"
-              disabled={form.formState.isSubmitting}
-            >
-              {form.formState.isSubmitting ? <Spinner /> : "Update"}
-            </Button>
-          </div>
-        </form>
-      )}
+              <div className="flex gap-2 items-center justify-end">
+                <Button
+                  type="button"
+                  className="py-5 cursor-pointer w-[30%]"
+                  disabled={form.formState.isSubmitting}
+                  variant="secondary"
+                  onClick={() => {
+                    form.reset();
+                    setActivePanel(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="submit"
+                  className="py-5 cursor-pointer bg-black text-white hover:bg-black/80 w-[30%]"
+                  disabled={form.formState.isSubmitting}
+                >
+                  {form.formState.isSubmitting ? <Spinner /> : "Update"}
+                </Button>
+              </div>
+            </form>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
