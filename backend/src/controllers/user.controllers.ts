@@ -22,6 +22,7 @@ export async function changeEmailController(
     if (e instanceof z.ZodError) {
       return next(createError(400, "Invalid field(s)"));
     }
-    return next(e);
+    const isHttpError = createError.isHttpError(e);
+    return next(isHttpError ? e : createError(500, "Failed to update email"));
   }
 }

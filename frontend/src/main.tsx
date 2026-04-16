@@ -5,7 +5,6 @@ import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { RootLayout } from "@/layouts/RootLayout";
 import Home from "@/components/Home";
-import Add from "@/components/Add";
 import Dashboard from "@/components/Dashboard";
 import Account from "@/components/Account/Account";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -15,19 +14,20 @@ import { AuthLayout } from "./layouts/AuthLayout";
 import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
 import Security from "./components/Account/Security/Security";
+import AddReceipt from "./components/AddReceipt/AddReceipt";
 
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
       { path: "/", Component: Home },
-      { path: "/add", Component: Add },
       { path: "/dashboard", Component: Dashboard },
       {
         path: "/account",
         Component: Account,
       },
       { path: "/account/security", Component: Security },
+      { path: "/add-receipt", Component: AddReceipt },
     ],
   },
   {

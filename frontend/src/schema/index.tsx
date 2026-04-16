@@ -46,7 +46,7 @@ export const updatePasswordSchema = z
   .object({
     currentPassword: z
       .string()
-      .min(1, "Please set the password")
+      .min(1, "please set the password")
       .min(8, "password too short"),
     newPassword: z
       .string()
@@ -61,3 +61,35 @@ export const updatePasswordSchema = z
     error: "Password don't match",
     path: ["confirmNewPassword"],
   });
+
+export const receiptCategories = [
+  "groceries",
+  "restaurant",
+  "transport",
+  "entertainment",
+  "health",
+  "shopping",
+  "utilities",
+  "travel",
+  "other",
+];
+export const addReceiptSchema = z.object({
+  merchant: z
+    .string()
+    .min(1, "please enter the merchant name")
+    .max(255, "Merchant name too long"),
+  amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
+  date: z.date(),
+  category: z.enum(receiptCategories, {
+    error: "Please select a valid category",
+  }),
+  currencySymbol: z.string().trim().optional(),
+});
+
+export const receiptSchema = z.object({
+  merchant: z.string().trim(),
+  amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
+  date: z.string().trim(),
+  category: z.enum(receiptCategories),
+  currencySymbol: z.string().trim(),
+});

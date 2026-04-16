@@ -5,7 +5,7 @@ import { Link, useLocation } from "react-router";
 
 const tabs = [
   { path: "/", label: "Feed", icon: Home },
-  { path: "/add", label: "Add", icon: Plus },
+  { path: "/add-receipt", label: "Add", icon: Plus },
   { path: "/dashboard", label: "Dashboard", icon: BarChart3 },
   { path: "/account", label: "Account", icon: UserCircle },
 ];
