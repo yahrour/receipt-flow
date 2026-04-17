@@ -15,6 +15,7 @@ import ForgotPassword from "./components/Auth/ForgotPassword";
 import ResetPassword from "./components/Auth/ResetPassword";
 import Security from "./components/Account/Security/Security";
 import AddReceipt from "./components/AddReceipt/AddReceipt";
+import Settings from "./components/Account/Settings/Settings";
 
 const router = createBrowserRouter([
   {
@@ -27,6 +28,7 @@ const router = createBrowserRouter([
         Component: Account,
       },
       { path: "/account/security", Component: Security },
+      { path: "/account/settings", Component: Settings },
       { path: "/add-receipt", Component: AddReceipt },
     ],
   },

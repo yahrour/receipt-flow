@@ -25,3 +25,7 @@ export const updateEmailSchema = z.object({
     .min(1, "Please set a password")
     .min(8, "password too short"),
 });
+
+export const userPreferencesSchema = z.object({
+  currency: z.string().min(1, "No currency provided"),
+});

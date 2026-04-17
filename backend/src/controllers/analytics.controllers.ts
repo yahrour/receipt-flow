@@ -12,7 +12,7 @@ export async function monthlySummaryController(
   res: Response,
   next: NextFunction,
 ) {
-  const userId = "123"; // req.user.id
+  const userId = req.user.id;
   const month = req.query.month
     ? Number(req.query.month)
     : new Date().getMonth() + 1;
@@ -39,7 +39,7 @@ export async function yearlySpendingController(
   res: Response,
   next: NextFunction,
 ) {
-  const userId = "123"; // req.user.id
+  const userId = req.user.id;
   const year = req.query.year
     ? Number(req.query.year)
     : new Date().getFullYear();
@@ -60,7 +60,7 @@ export async function categoriesSpendingController(
   res: Response,
   next: NextFunction,
 ) {
-  const userId = "123"; // req.user.id
+  const userId = req.user.id;
   const month = req.query.month
     ? Number(req.query.month)
     : new Date().getMonth() + 1;

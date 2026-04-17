@@ -1,9 +1,11 @@
 import {
   ChevronRight,
   LogIn,
+  Settings,
   ShieldCogCorner,
   UserCircle,
   UserPlus,
+  type LucideIcon,
 } from "lucide-react";
 import { Button } from "../ui/button";
 import { authClient } from "@/lib/auth";
@@ -21,6 +23,22 @@ type UserSession =
       image?: string | null | undefined;
     }
   | undefined;
+
+const tabs = [
+  {
+    link: "/account/security",
+    title: "Security",
+    description: "Password, email & sessions",
+    icon: ShieldCogCorner,
+  },
+  {
+    link: "/account/settings",
+    title: "Settings",
+    description: "Manage currency",
+    icon: Settings,
+  },
+];
+
 export default function Account() {
   const { data } = useQuery({
     queryKey: ["session"],
@@ -34,7 +52,19 @@ export default function Account() {
       <div className="space-y-4">
         <Header session={session} />
         <SignMethods session={session} />
-        <Security />
+        {session && (
+          <div className="space-y-2">
+            {tabs.map((tab) => (
+              <Tab
+                key={tab.link}
+                link={tab.link}
+                title={tab.title}
+                description={tab.description}
+                icon={tab.icon}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -123,18 +153,28 @@ function SignMethods({ session }: { session: UserSession }) {
   );
 }
 
-function Security() {
+function Tab({
+  link,
+  title,
+  description,
+  icon: Icon,
+}: {
+  link: string;
+  title: string;
+  description: string;
+  icon: LucideIcon;
+}) {
   return (
     <Link
-      to={"/account/security"}
+      to={link}
       className="bg-white hover:bg-white/50 transition group flex items-center gap-4 p-4 rounded-2xl"
     >
       <div className="bg-gray-100 p-2 rounded-full">
-        <ShieldCogCorner size={18} className="text-gray-400 stroke-2" />
+        <Icon size={18} className="text-gray-400 stroke-2" />
       </div>
       <div className="space-y-1">
-        <p className="text-sm font-medium">Security</p>
-        <p className="text-xs text-gray-500">Password, email & sessions</p>
+        <p className="text-sm font-medium">{title}</p>
+        <p className="text-xs text-gray-500">{description}</p>
       </div>
       <ChevronRight
         className="text-gray-400 ml-auto group-hover:translate-x-1 transition-all"

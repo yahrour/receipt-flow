@@ -1,12 +1,11 @@
 import { authClient } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import { Spinner } from "../../ui/spinner";
 import { ManageEmail } from "./ManageEmail";
 import { ManagePassword } from "./ManagePassword";
 import { ManageSessions } from "./ManageSessions";
-import { ArrowLeft } from "lucide-react";
 
 type Panel = "email" | "password" | "session" | null;
 
@@ -30,13 +29,6 @@ export default function Security() {
 
   return (
     <div className="space-y-8 max-w-xl mx-auto">
-      <Link
-        to="/account"
-        className="flex items-center gap-1 text-gray-500 hover:text-gray-600 transition text-sm"
-      >
-        <ArrowLeft size={18} />
-        <span>Account</span>
-      </Link>
       <h1 className="text-3xl font-medium">Security</h1>
       <div className="space-y-4">
         <ManageEmail

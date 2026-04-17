@@ -12,6 +12,7 @@ import { fail } from "./utils/response.js";
 import { receiptsRouter } from "./routes/receipts.routes.js";
 import { analyticsRouter } from "./routes/analytics.routes.js";
 import { userRouter } from "./routes/user.routes.js";
+import { preferencesRouter } from "./routes/preferences.routes.js";
 
 const app = express();
 
@@ -36,6 +37,7 @@ app.use("/api/users", userRouter);
 
 app.use("/api/receipts", receiptsRouter);
 app.use("/api/analytics", analyticsRouter);
+app.use("/api/preferences", preferencesRouter);
 
 // catch 404 and forward to error handler
 app.use((req: Request, res: Response, next: NextFunction) => {
