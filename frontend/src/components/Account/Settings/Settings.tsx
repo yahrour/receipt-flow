@@ -12,6 +12,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { env } from "@/config/env";
 import { CURRENCIES } from "@/constants";
+import { queryClient } from "@/main";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
@@ -68,7 +69,9 @@ export default function Settings() {
   };
   const mutation = useMutation({
     mutationFn: updatePreferences,
-    onSuccess: () => {},
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["preferences"] });
+    },
     onError: () => {
       setError("Failed to update, please try again");
     },

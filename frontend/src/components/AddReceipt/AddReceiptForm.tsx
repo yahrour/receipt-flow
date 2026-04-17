@@ -1,6 +1,6 @@
 import { addReceiptSchema, receiptCategories } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleAlert, DollarSign, Store } from "lucide-react";
+import { CircleAlert, Store } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type z from "zod";
@@ -13,7 +13,7 @@ import {
 import { Button } from "../ui/button";
 import { Spinner } from "../ui/spinner";
 import { DatePicker } from "./DatePicker";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { env } from "@/config/env";
 import type { ResponseType } from "./ReceiptUpload";
 import { useNavigate } from "react-router";
@@ -30,6 +30,14 @@ type AddReceiptFormProps = {
   date?: Date;
   category?: string;
 };
+type PreferencesResponseType = {
+  success: boolean;
+  message: string;
+  data: {
+    id: number;
+    currency: string;
+  };
+};
 
 export default function AddReceiptForm({
   merchant,
@@ -45,6 +53,27 @@ export default function AddReceiptForm({
       date: date || new Date(),
       category: category || "",
     },
+  });
+
+  const [currency, setCurrency] = useState<string | null>(null);
+
+  const fetchPreferences = async () => {
+    const res = await fetch(env.API_BASE_URL + "/api/preferences", {
+      credentials: "include",
+    });
+
+    if (!res.ok) {
+      throw new Error("Failed to fetch preferences");
+    }
+
+    const jsonData = (await res.json()) as PreferencesResponseType;
+    setCurrency(jsonData.data.currency);
+    return jsonData;
+  };
+
+  useQuery({
+    queryKey: ["preferences"],
+    queryFn: fetchPreferences,
   });
 
   const [message, setMessage] = useState<MessageType | null>(null);
@@ -174,7 +203,7 @@ export default function AddReceiptForm({
                   className="placeholder:text-sm placeholder:tracking-wider"
                 />
                 <InputGroupAddon align="inline-start">
-                  <DollarSign className="text-muted-foreground" />
+                  <span className="text-muted-foreground">{currency}</span>
                 </InputGroupAddon>
               </InputGroup>
               {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
