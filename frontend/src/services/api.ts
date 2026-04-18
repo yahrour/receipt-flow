@@ -6,14 +6,14 @@ export async function fetchUserPreferences() {
     credentials: "include",
   });
 
+  const jsonData = (await res.json().catch(() => null)) as ApiResponse<{
+    id: number;
+    currency: string;
+  }> | null;
+
   if (!res.ok) {
     throw new Error("Failed to fetch preferences");
   }
-
-  const jsonData = (await res.json()) as ApiResponse<{
-    id: number;
-    currency: string;
-  }>;
 
   return jsonData;
 }

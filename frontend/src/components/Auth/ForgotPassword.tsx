@@ -27,7 +27,7 @@ export default function ForgotPassword() {
   const onSubmit = async (formData: ForgotPasswordSchema) => {
     const { error } = await authClient.requestPasswordReset({
       email: formData.email,
-      redirectTo: env.APP_URL + "/reset-password", // optional
+      redirectTo: env.APP_URL + "/reset-password",
     });
 
     if (error) {

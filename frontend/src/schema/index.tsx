@@ -74,5 +74,5 @@ export const receiptSchema = z.object({
   category: z.enum(RECEIPT_CATEGORIES, {
     error: "Please select a valid category",
   }),
-  currencySymbol: z.string().trim(),
+  currency: z.string().trim(),
 });

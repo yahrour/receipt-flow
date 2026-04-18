@@ -15,7 +15,7 @@ export const receiptSchema = z.object({
     "travel",
     "other",
   ]),
-  currencySymbol: z.string().trim(),
+  currency: z.string().trim(),
 });
 
 export const updateEmailSchema = z.object({

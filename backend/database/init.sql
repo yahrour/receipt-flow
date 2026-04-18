@@ -7,7 +7,7 @@ CREATE TABLE receipts (
   amount DECIMAL(15, 2) NOT NULL CHECK (amount > 0),
   receipt_date DATE NOT NULL,
   category receipt_category NOT NULL DEFAULT 'other',
-  currency_symbol CHAR(3) NOT NULL,
+  currency VARCHAR(10) NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 

@@ -16,17 +16,25 @@ async function uploadReceipt(formData: FormData) {
     credentials: "include",
   });
 
+  const jsonData = (await res
+    .json()
+    .catch(() => null)) as ApiResponse<ReceiptSchema> | null;
+
   if (!res.ok) {
-    throw new Error("Failed to analyze receipt");
+    throw new Error(jsonData?.message || "Failed to upload receipt");
   }
 
-  const jsonData = (await res.json()) as ApiResponse<ReceiptSchema>;
+  if (!jsonData) {
+    throw new Error("Failed to upload receipt");
+  }
+
   if (jsonData.success === false) {
     throw new Error(
       jsonData.message ||
         "We couldn't analyze the receipt. Please try again or enter details manually.",
     );
   }
+
   return jsonData.data;
 }
 
@@ -42,12 +50,18 @@ export default function Upload({
   const mutation = useMutation({
     mutationFn: uploadReceipt,
     onSuccess: (data) => {
-      const parsedData = receiptSchema.safeParse(data);
+      const parsedData = receiptSchema.safeParse({
+        merchant: data.merchant,
+        amount: data.amount,
+        date: data.date ? new Date(data.date) : new Date(),
+        category: data.category,
+        currency: data.currency,
+      });
+
       if (parsedData.error) {
-        setError(
-          "We couldn't read the receipt. Please try again or enter details manually.",
+        return setError(
+          "We couldn't analyze the receipt. Please try again or enter details manually.",
         );
-        return;
       }
       setData({
         merchant: parsedData?.data.merchant || "",
@@ -56,7 +70,7 @@ export default function Upload({
           ? new Date(parsedData.data.date)
           : new Date(),
         category: parsedData?.data.category || "",
-        currencySymbol: "",
+        currency: "",
       });
       setStep("form");
     },
@@ -82,8 +96,8 @@ export default function Upload({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { "image/*": [], "application/pdf": [] }, // Images only
-    maxFiles: 1, // Single file
+    accept: { "image/*": [], "application/pdf": [] },
+    maxFiles: 1,
     maxSize: 1024 * 1024 * 10, // 10MB limit
   });
 
@@ -108,7 +122,7 @@ export default function Upload({
         >
           <input {...getInputProps()} />
           {isDragActive ? (
-            <p>Drop the image here...</p>
+            <p>Drop the receipt here...</p>
           ) : (
             <div className="bg-blue-100 w-fit mx-auto mb-2 p-2 rounded-md">
               <UploadIcon className="bg-blue-100 text-blue-400" />

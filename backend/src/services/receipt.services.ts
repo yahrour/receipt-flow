@@ -92,14 +92,14 @@ export async function saveReceiptService(body: ReceiptType, userId: string) {
   // Saving
   try {
     await query(
-      "INSERT INTO receipts (user_id, merchant, amount, receipt_date, category, currency_symbol) VALUES ($1, $2, $3, $4, $5, $6)",
+      "INSERT INTO receipts (user_id, merchant, amount, receipt_date, category, currency) VALUES ($1, $2, $3, $4, $5, $6)",
       [
         userId,
         receiptData.merchant,
         receiptData.amount,
         receiptData.date,
         receiptData.category,
-        receiptData.currencySymbol,
+        receiptData.currency,
       ],
     );
     return receiptData;
@@ -111,7 +111,7 @@ export async function saveReceiptService(body: ReceiptType, userId: string) {
 export async function getReceiptsService(userId: string) {
   try {
     const { rows } = await query(
-      "SELECT id, merchant, amount, receipt_date, category, currency_symbol FROM receipts WHERE user_id=$1",
+      "SELECT id, merchant, amount, receipt_date, category, currency FROM receipts WHERE user_id=$1",
       [userId],
     );
     return rows;
@@ -131,7 +131,7 @@ export async function getReceiptService(
 
   try {
     const { rows } = await query(
-      "SELECT id, merchant, amount, receipt_date, category, currency_symbol FROM receipts WHERE id=$1 AND user_id=$2",
+      "SELECT id, merchant, amount, receipt_date, category, currency FROM receipts WHERE id=$1 AND user_id=$2",
       [receiptId, userId],
     );
     if (!rows[0]) {
@@ -163,13 +163,13 @@ export async function updateReceiptService(
 
   try {
     const { rows, rowCount } = await query(
-      "UPDATE receipts SET merchant=$1, amount=$2, receipt_date=$3, category=$4, currency_symbol=$5 WHERE id=$6 AND user_id=$7 RETURNING *",
+      "UPDATE receipts SET merchant=$1, amount=$2, receipt_date=$3, category=$4, currency=$5 WHERE id=$6 AND user_id=$7 RETURNING *",
       [
         receiptData.merchant,
         receiptData.amount,
         receiptData.date,
         receiptData.category,
-        receiptData.currencySymbol,
+        receiptData.currency,
         receiptId,
         userId,
       ],

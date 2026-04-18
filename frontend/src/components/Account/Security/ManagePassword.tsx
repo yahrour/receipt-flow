@@ -54,14 +54,16 @@ export function ManagePassword({
   const credentialAccount = accounts?.data?.find(
     (acc) => acc.providerId === "credential",
   );
-  const lastUpdated = timeAgo(credentialAccount?.updatedAt || 0);
+
+  const lastUpdated = credentialAccount?.updatedAt
+    ? timeAgo(credentialAccount?.updatedAt)
+    : "";
 
   if (isLoading) {
     return <Skeleton className="h-18 rounded-2xl" />;
   }
 
   const onSubmit = async (data: UpdatePasswordSchema) => {
-    console.log("Submit");
     const { error } = await authClient.changePassword({
       newPassword: data.newPassword,
       currentPassword: data.currentPassword,

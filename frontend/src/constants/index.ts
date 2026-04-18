@@ -50,3 +50,5 @@ export const RECEIPT_CATEGORIES = [
   "travel",
   "other",
 ] as const;
+
+export const DEFAULT_CURRENCY = "USD" as const;

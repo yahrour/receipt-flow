@@ -17,7 +17,7 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { env } from "@/config/env";
 import { useNavigate } from "react-router";
 import type { ApiResponse, Message } from "@/types";
-import { RECEIPT_CATEGORIES } from "@/constants";
+import { DEFAULT_CURRENCY, RECEIPT_CATEGORIES } from "@/constants";
 import type { ReceiptSchema } from "./types";
 
 type ReceiptFormValues = z.input<typeof receiptSchema>;
@@ -29,6 +29,7 @@ type Props = {
 };
 
 export default function Form({ merchant, amount, date, category }: Props) {
+  const [currency, setCurrency] = useState<string | null>(null);
   const form = useForm<ReceiptFormValues, unknown, ReceiptSchema>({
     resolver: zodResolver(receiptSchema),
     defaultValues: {
@@ -36,25 +37,30 @@ export default function Form({ merchant, amount, date, category }: Props) {
       amount: typeof amount === "number" ? String(amount) : "",
       date: date || new Date(),
       category: category || "other",
+      currency: currency || DEFAULT_CURRENCY,
     },
   });
-
-  const [currency, setCurrency] = useState<string | null>(null);
 
   const fetchPreferences = async () => {
     const res = await fetch(env.API_BASE_URL + "/api/preferences", {
       credentials: "include",
     });
 
-    if (!res.ok) {
-      throw new Error("Failed to fetch preferences");
-    }
-
-    const jsonData = (await res.json()) as ApiResponse<{
+    const jsonData = (await res.json().catch(() => null)) as ApiResponse<{
       id: number;
       currency: string;
-    }>;
-    setCurrency(jsonData.data.currency);
+    }> | null;
+
+    if (!res.ok) {
+      throw new Error(jsonData?.message || "Failed to fetch preferences");
+    }
+
+    if (jsonData?.data.currency) {
+      setCurrency(jsonData.data.currency);
+    } else {
+      setCurrency(DEFAULT_CURRENCY);
+    }
+
     return jsonData;
   };
 
@@ -77,12 +83,15 @@ export default function Form({ merchant, amount, date, category }: Props) {
       credentials: "include",
     });
 
+    const jsonData = (await res.json().catch(() => null)) as ApiResponse | null;
+
     if (!res.ok) {
-      throw new Error("We couldn't save the receipt, Please try again.");
+      throw new Error(
+        jsonData?.message || "We couldn't save the receipt, Please try again.",
+      );
     }
 
-    const jsonData = (await res.json()) as ApiResponse;
-    if (jsonData.success === false) {
+    if (jsonData?.success === false) {
       throw new Error(
         jsonData.message || "We couldn't save the receipt, Please try again.",
       );
@@ -95,9 +104,11 @@ export default function Form({ merchant, amount, date, category }: Props) {
       form.reset();
       void navigate("/");
     },
-    onError: (error: unknown) => {
-      console.log("save receipt error: ", error);
-      setMessage({ success: false, message: "Failed to save receipt" });
+    onError: (error: Error) => {
+      setMessage({
+        success: false,
+        message: error.message || "Failed to save receipt",
+      });
     },
   });
 
@@ -114,7 +125,7 @@ export default function Form({ merchant, amount, date, category }: Props) {
       amount: data.amount,
       category: data.category,
       date: data.date,
-      currencySymbol: currency,
+      currency: currency,
     });
   };
 

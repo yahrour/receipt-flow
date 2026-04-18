@@ -19,14 +19,33 @@ import {
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import type z from "zod";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { authClient } from "@/lib/auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatePresence, motion } from "framer-motion";
-import type { Message } from "@/types";
+import type { ApiResponse, Message } from "@/types";
 import type { SecurityContextState } from "./types";
 
 type UpdateEmailSchema = z.infer<typeof updateEmailSchema>;
+
+async function updateEmail(data: UpdateEmailSchema) {
+  const res = await fetch(env.API_BASE_URL + "/api/users/email", {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+    credentials: "include",
+  });
+
+  const resJson = (await res.json().catch(() => null)) as ApiResponse | null;
+
+  if (!res.ok) {
+    throw new Error(resJson?.message || "Failed to update email, try again.");
+  }
+
+  if (!resJson?.success) {
+    throw new Error(resJson?.message || "Failed to update email, try again.");
+  }
+}
 
 export function ManageEmail({
   activeSection,
@@ -46,29 +65,25 @@ export function ManageEmail({
   const [showPassword, setShowPassword] = useState(false);
   const [message, setMessage] = useState<Message | null>(null);
 
-  const onSubmit = async (data: UpdateEmailSchema) => {
-    const endpoint = env.API_BASE_URL + "/api/users/email";
-    const result = await fetch(endpoint, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(data),
-      credentials: "include",
-    });
-    if (!result.ok) {
-      const errorData = (await result.json()) as { message?: string };
-      setMessage({
-        success: false,
-        message: errorData.message || "Failed to update email",
-      });
-    } else {
+  const mutate = useMutation({
+    mutationFn: updateEmail,
+    onSuccess: () => {
       setMessage({
         success: true,
         message: "Email updated successfully",
       });
       form.reset();
-    }
+    },
+    onError: (error: Error) => {
+      setMessage({
+        success: false,
+        message: error.message || "Failed to update email",
+      });
+    },
+  });
+
+  const onSubmit = async (data: UpdateEmailSchema) => {
+    await mutate.mutateAsync(data);
   };
 
   if (isLoading) {

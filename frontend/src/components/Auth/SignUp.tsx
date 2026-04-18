@@ -9,7 +9,7 @@ import { Separator } from "../ui/separator";
 import { Link, useNavigate } from "react-router";
 import { GoogleAuthButton } from "./GoogleAuthButton";
 import { authClient } from "@/lib/auth";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { env } from "@/config/env";
 import { useQuery } from "@tanstack/react-query";
 import { EyeIcon, EyeOffIcon } from "lucide-react";
@@ -39,12 +39,6 @@ export default function SignUp() {
   const navigate = useNavigate();
   const [message, setMessage] = useState<Message | null>(null);
   const [showPassword, setShowPassword] = useState(false);
-
-  useEffect(() => {
-    if (session?.data?.user) {
-      void navigate("/account", { replace: true });
-    }
-  }, [session, navigate]);
 
   const onSubmit = async (data: SignUpSchema) => {
     const { error } = await authClient.signUp.email(
