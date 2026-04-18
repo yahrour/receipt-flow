@@ -11,23 +11,20 @@ import { authClient } from "@/lib/auth";
 import { useState } from "react";
 import { env } from "@/config/env";
 import { Spinner } from "../ui/spinner";
+import type { Message } from "@/types";
 
-type ForgotPasswordSchemaType = z.infer<typeof forgotPasswordSchema>;
-type MessageType = {
-  success: boolean;
-  message: string;
-};
+type ForgotPasswordSchema = z.infer<typeof forgotPasswordSchema>;
 
 export default function ForgotPassword() {
-  const form = useForm<ForgotPasswordSchemaType>({
+  const form = useForm<ForgotPasswordSchema>({
     resolver: zodResolver(forgotPasswordSchema),
     defaultValues: {
       email: "",
     },
   });
-  const [message, setMessage] = useState<MessageType | null>(null);
+  const [message, setMessage] = useState<Message | null>(null);
 
-  const onSubmit = async (formData: ForgotPasswordSchemaType) => {
+  const onSubmit = async (formData: ForgotPasswordSchema) => {
     const { error } = await authClient.requestPasswordReset({
       email: formData.email,
       redirectTo: env.APP_URL + "/reset-password", // optional

@@ -1,8 +1,6 @@
 import {
   ChevronRight,
   LogIn,
-  Settings,
-  ShieldCogCorner,
   UserCircle,
   UserPlus,
   type LucideIcon,
@@ -11,33 +9,8 @@ import { Button } from "../ui/button";
 import { authClient } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router";
-
-type UserSession =
-  | {
-      id: string;
-      createdAt: Date;
-      updatedAt: Date;
-      email: string;
-      emailVerified: boolean;
-      name: string;
-      image?: string | null | undefined;
-    }
-  | undefined;
-
-const tabs = [
-  {
-    link: "/account/security",
-    title: "Security",
-    description: "Password, email & sessions",
-    icon: ShieldCogCorner,
-  },
-  {
-    link: "/account/settings",
-    title: "Settings",
-    description: "Manage currency",
-    icon: Settings,
-  },
-];
+import { ACCOUNT_TABS } from "@/constants";
+import type { UserSession } from "@/types";
 
 export default function Account() {
   const { data } = useQuery({
@@ -54,7 +27,7 @@ export default function Account() {
         <SignMethods session={session} />
         {session && (
           <div className="space-y-2">
-            {tabs.map((tab) => (
+            {ACCOUNT_TABS.map((tab) => (
               <Tab
                 key={tab.link}
                 link={tab.link}
@@ -70,7 +43,7 @@ export default function Account() {
   );
 }
 
-function Header({ session }: { session: UserSession }) {
+function Header({ session }: { session: UserSession | null | undefined }) {
   if (!session) {
     return (
       <div className="bg-white flex items-center gap-4 p-4 rounded-2xl">
@@ -105,7 +78,7 @@ function Header({ session }: { session: UserSession }) {
   );
 }
 
-function SignMethods({ session }: { session: UserSession }) {
+function SignMethods({ session }: { session: UserSession | null | undefined }) {
   const navigate = useNavigate();
   const handleSignOut = async () => {
     await authClient.signOut({

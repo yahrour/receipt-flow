@@ -1,14 +1,11 @@
 import { authClient } from "@/lib/auth";
-import { addReceiptSchema } from "@/schema";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import type z from "zod";
-import ReceiptUpload from "./ReceiptUpload";
-import AddReceiptForm from "./AddReceiptForm";
 import { ArrowLeft } from "lucide-react";
-
-export type AddReceiptSchemaType = z.infer<typeof addReceiptSchema>;
+import type { ReceiptSchema } from "./types";
+import Form from "./Form";
+import Upload from "./Upload";
 
 export default function AddReceipt() {
   const { data: session, isLoading } = useQuery({
@@ -17,7 +14,7 @@ export default function AddReceipt() {
   });
 
   const navigate = useNavigate();
-  const [data, setData] = useState<AddReceiptSchemaType | null>(null);
+  const [data, setData] = useState<ReceiptSchema | null>(null);
   const [step, setStep] = useState<"upload" | "form">("upload");
 
   if (isLoading) {
@@ -45,11 +42,9 @@ export default function AddReceipt() {
           className={`flex-1 h-1 rounded-full ${step === "form" ? "bg-blue-500" : "bg-gray-200"}`}
         />
       </div>
-      {step === "upload" && (
-        <ReceiptUpload setData={setData} setStep={setStep} />
-      )}
+      {step === "upload" && <Upload setData={setData} setStep={setStep} />}
       {step === "form" && (
-        <AddReceiptForm
+        <Form
           merchant={data?.merchant}
           amount={data?.amount}
           date={data?.date}

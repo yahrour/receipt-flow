@@ -1,20 +1,13 @@
 import { useDropzone } from "react-dropzone";
 import React, { useState } from "react";
-import { Upload } from "lucide-react";
+import { Upload as UploadIcon } from "lucide-react";
 import { env } from "@/config/env";
-import type z from "zod";
 import { receiptSchema } from "@/schema";
-import type { AddReceiptSchemaType } from "./AddReceipt";
 import { Spinner } from "../ui/spinner";
 import { Button } from "../ui/button";
 import { useMutation } from "@tanstack/react-query";
-
-type ReceiptSchemaType = z.infer<typeof receiptSchema>;
-export type ResponseType = {
-  success: boolean;
-  message: string;
-  data?: ReceiptSchemaType;
-};
+import type { ApiResponse } from "@/types";
+import type { ReceiptSchema } from "./types";
 
 async function uploadReceipt(formData: FormData) {
   const res = await fetch(env.API_BASE_URL + "/api/receipts/analyze", {
@@ -27,7 +20,7 @@ async function uploadReceipt(formData: FormData) {
     throw new Error("Failed to analyze receipt");
   }
 
-  const jsonData = (await res.json()) as ResponseType;
+  const jsonData = (await res.json()) as ApiResponse<ReceiptSchema>;
   if (jsonData.success === false) {
     throw new Error(
       jsonData.message ||
@@ -37,14 +30,15 @@ async function uploadReceipt(formData: FormData) {
   return jsonData.data;
 }
 
-export default function ReceiptUpload({
+export default function Upload({
   setData,
   setStep,
 }: {
-  setData: React.Dispatch<React.SetStateAction<AddReceiptSchemaType | null>>;
+  setData: React.Dispatch<React.SetStateAction<ReceiptSchema | null>>;
   setStep: React.Dispatch<React.SetStateAction<"upload" | "form">>;
 }) {
   const [error, setError] = useState<string | null>(null);
+
   const mutation = useMutation({
     mutationFn: uploadReceipt,
     onSuccess: (data) => {
@@ -62,6 +56,7 @@ export default function ReceiptUpload({
           ? new Date(parsedData.data.date)
           : new Date(),
         category: parsedData?.data.category || "",
+        currencySymbol: "",
       });
       setStep("form");
     },
@@ -116,7 +111,7 @@ export default function ReceiptUpload({
             <p>Drop the image here...</p>
           ) : (
             <div className="bg-blue-100 w-fit mx-auto mb-2 p-2 rounded-md">
-              <Upload className="bg-blue-100 text-blue-400" />
+              <UploadIcon className="bg-blue-100 text-blue-400" />
             </div>
           )}
           <p>Tab to upload receipt</p>

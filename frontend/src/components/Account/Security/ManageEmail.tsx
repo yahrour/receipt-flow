@@ -1,5 +1,4 @@
 import { Controller, useForm } from "react-hook-form";
-import type { Props } from "./Security";
 import { updateEmailSchema } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
@@ -24,19 +23,20 @@ import { useQuery } from "@tanstack/react-query";
 import { authClient } from "@/lib/auth";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatePresence, motion } from "framer-motion";
+import type { Message } from "@/types";
+import type { SecurityContextState } from "./types";
 
-type UpdateEmailSchemaType = z.infer<typeof updateEmailSchema>;
-type MessageType = {
-  success: boolean;
-  message: string;
-};
+type UpdateEmailSchema = z.infer<typeof updateEmailSchema>;
 
-export function ManageEmail({ activePanel, setActivePanel }: Props) {
+export function ManageEmail({
+  activeSection,
+  setActiveSection,
+}: SecurityContextState) {
   const { data: session, isLoading } = useQuery({
     queryKey: ["session"],
     queryFn: () => authClient.getSession(),
   });
-  const form = useForm<UpdateEmailSchemaType>({
+  const form = useForm<UpdateEmailSchema>({
     resolver: zodResolver(updateEmailSchema),
     defaultValues: {
       newEmail: "",
@@ -44,9 +44,9 @@ export function ManageEmail({ activePanel, setActivePanel }: Props) {
     },
   });
   const [showPassword, setShowPassword] = useState(false);
-  const [message, setMessage] = useState<MessageType | null>(null);
+  const [message, setMessage] = useState<Message | null>(null);
 
-  const onSubmit = async (data: UpdateEmailSchemaType) => {
+  const onSubmit = async (data: UpdateEmailSchema) => {
     const endpoint = env.API_BASE_URL + "/api/users/email";
     const result = await fetch(endpoint, {
       method: "PUT",
@@ -78,9 +78,9 @@ export function ManageEmail({ activePanel, setActivePanel }: Props) {
   return (
     <div>
       <div
-        className={`cursor-pointer bg-white hover:bg-white/50 transition group flex items-center gap-4 p-4 ${activePanel === "email" ? "rounded-tl-2xl rounded-tr-2xl" : "rounded-2xl"}`}
+        className={`cursor-pointer bg-white hover:bg-white/50 transition group flex items-center gap-4 p-4 ${activeSection === "email" ? "rounded-tl-2xl rounded-tr-2xl" : "rounded-2xl"}`}
         onClick={() => {
-          setActivePanel(activePanel === "email" ? null : "email");
+          setActiveSection(activeSection === "email" ? null : "email");
           form.reset();
         }}
       >
@@ -93,7 +93,7 @@ export function ManageEmail({ activePanel, setActivePanel }: Props) {
         </div>
       </div>
       <AnimatePresence>
-        {activePanel === "email" && (
+        {activeSection === "email" && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -173,7 +173,7 @@ export function ManageEmail({ activePanel, setActivePanel }: Props) {
                   variant="secondary"
                   onClick={() => {
                     form.reset();
-                    setActivePanel(null);
+                    setActiveSection(null);
                   }}
                 >
                   Cancel

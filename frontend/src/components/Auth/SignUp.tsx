@@ -19,18 +19,16 @@ import {
   InputGroupInput,
 } from "../ui/input-group";
 import { Spinner } from "../ui/spinner";
+import type { Message } from "@/types";
 
-type SignUpSchemaType = z.infer<typeof signUpSchema>;
-type MessageType = {
-  success: boolean;
-  message: string;
-};
+type SignUpSchema = z.infer<typeof signUpSchema>;
+
 export default function SignUp() {
   const { data: session, isLoading } = useQuery({
     queryKey: ["session"],
     queryFn: () => authClient.getSession(),
   });
-  const form = useForm<SignUpSchemaType>({
+  const form = useForm<SignUpSchema>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       name: "",
@@ -39,7 +37,7 @@ export default function SignUp() {
     },
   });
   const navigate = useNavigate();
-  const [message, setMessage] = useState<MessageType | null>(null);
+  const [message, setMessage] = useState<Message | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
@@ -48,7 +46,7 @@ export default function SignUp() {
     }
   }, [session, navigate]);
 
-  const onSubmit = async (data: SignUpSchemaType) => {
+  const onSubmit = async (data: SignUpSchema) => {
     const { error } = await authClient.signUp.email(
       {
         name: data.name,

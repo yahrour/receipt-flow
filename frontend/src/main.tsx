@@ -23,10 +23,7 @@ const router = createBrowserRouter([
     children: [
       { path: "/", Component: Home },
       { path: "/dashboard", Component: Dashboard },
-      {
-        path: "/account",
-        Component: Account,
-      },
+      { path: "/account", Component: Account },
       { path: "/account/security", Component: Security },
       { path: "/account/settings", Component: Settings },
       { path: "/add-receipt", Component: AddReceipt },

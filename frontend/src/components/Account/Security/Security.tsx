@@ -6,8 +6,7 @@ import { Spinner } from "../../ui/spinner";
 import { ManageEmail } from "./ManageEmail";
 import { ManagePassword } from "./ManagePassword";
 import { ManageSessions } from "./ManageSessions";
-
-type Panel = "email" | "password" | "session" | null;
+import type { SecuritySection } from "./types";
 
 export default function Security() {
   const { data: session, isLoading: sessionLoading } = useQuery({
@@ -16,7 +15,7 @@ export default function Security() {
   });
 
   const navigate = useNavigate();
-  const [activePanel, setActivePanel] = useState<Panel>(null);
+  const [activeSection, setActiveSection] = useState<SecuritySection>(null);
 
   if (sessionLoading)
     return (
@@ -32,23 +31,18 @@ export default function Security() {
       <h1 className="text-3xl font-medium">Security</h1>
       <div className="space-y-4">
         <ManageEmail
-          activePanel={activePanel}
-          setActivePanel={setActivePanel}
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
         />
         <ManagePassword
-          activePanel={activePanel}
-          setActivePanel={setActivePanel}
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
         />
         <ManageSessions
-          activePanel={activePanel}
-          setActivePanel={setActivePanel}
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
         />
       </div>
     </div>
   );
 }
-
-export type Props = {
-  activePanel: Panel;
-  setActivePanel: React.Dispatch<React.SetStateAction<Panel>>;
-};

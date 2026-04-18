@@ -15,12 +15,9 @@ import {
 } from "../ui/input-group";
 import { Spinner } from "../ui/spinner";
 import { useQuery } from "@tanstack/react-query";
+import type { Message } from "@/types";
 
-type ResetPasswordSchemaType = z.infer<typeof resetPasswordSchema>;
-type MessageType = {
-  success: boolean;
-  message: string;
-};
+type ResetPasswordSchema = z.infer<typeof resetPasswordSchema>;
 
 export default function ResetPassword() {
   const { data: session, isLoading } = useQuery({
@@ -29,14 +26,14 @@ export default function ResetPassword() {
   });
   const navigate = useNavigate();
   const token = new URLSearchParams(window.location.search).get("token");
-  const form = useForm<ResetPasswordSchemaType>({
+  const form = useForm<ResetPasswordSchema>({
     resolver: zodResolver(resetPasswordSchema),
     defaultValues: {
       password: "",
       confirmPassword: "",
     },
   });
-  const [message, setMessage] = useState<MessageType | null>(null);
+  const [message, setMessage] = useState<Message | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
@@ -44,7 +41,7 @@ export default function ResetPassword() {
     return <div>Token not found</div>;
   }
 
-  const onSubmit = async (formData: ResetPasswordSchemaType) => {
+  const onSubmit = async (formData: ResetPasswordSchema) => {
     const { error } = await authClient.resetPassword({
       newPassword: formData.password,
       token,

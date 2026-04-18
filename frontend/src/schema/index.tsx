@@ -1,3 +1,4 @@
+import { RECEIPT_CATEGORIES } from "@/constants";
 import z from "zod";
 
 export const signUpSchema = z.object({
@@ -62,34 +63,16 @@ export const updatePasswordSchema = z
     path: ["confirmNewPassword"],
   });
 
-export const receiptCategories = [
-  "groceries",
-  "restaurant",
-  "transport",
-  "entertainment",
-  "health",
-  "shopping",
-  "utilities",
-  "travel",
-  "other",
-];
-export const addReceiptSchema = z.object({
+export const receiptSchema = z.object({
   merchant: z
     .string()
+    .trim()
     .min(1, "please enter the merchant name")
     .max(255, "Merchant name too long"),
   amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
   date: z.date(),
-  category: z.enum(receiptCategories, {
+  category: z.enum(RECEIPT_CATEGORIES, {
     error: "Please select a valid category",
   }),
-  currencySymbol: z.string().trim().optional(),
-});
-
-export const receiptSchema = z.object({
-  merchant: z.string().trim(),
-  amount: z.coerce.number().min(0.01, "Amount must be greater than 0"),
-  date: z.string().trim(),
-  category: z.enum(receiptCategories),
   currencySymbol: z.string().trim(),
 });

@@ -1,4 +1,4 @@
-import { addReceiptSchema, receiptCategories } from "@/schema";
+import { receiptSchema } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { CircleAlert, Store } from "lucide-react";
 import { useState } from "react";
@@ -15,43 +15,27 @@ import { Spinner } from "../ui/spinner";
 import { DatePicker } from "./DatePicker";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { env } from "@/config/env";
-import type { ResponseType } from "./ReceiptUpload";
 import { useNavigate } from "react-router";
+import type { ApiResponse, Message } from "@/types";
+import { RECEIPT_CATEGORIES } from "@/constants";
+import type { ReceiptSchema } from "./types";
 
-type AddReceiptFormValues = z.input<typeof addReceiptSchema>;
-type AddReceiptSchemaType = z.output<typeof addReceiptSchema>;
-type MessageType = {
-  success: boolean;
-  message: string;
-};
-type AddReceiptFormProps = {
+type ReceiptFormValues = z.input<typeof receiptSchema>;
+type Props = {
   merchant?: string;
   amount?: number;
   date?: Date;
-  category?: string;
-};
-type PreferencesResponseType = {
-  success: boolean;
-  message: string;
-  data: {
-    id: number;
-    currency: string;
-  };
+  category?: (typeof RECEIPT_CATEGORIES)[number];
 };
 
-export default function AddReceiptForm({
-  merchant,
-  amount,
-  date,
-  category,
-}: AddReceiptFormProps) {
-  const form = useForm<AddReceiptFormValues, unknown, AddReceiptSchemaType>({
-    resolver: zodResolver(addReceiptSchema),
+export default function Form({ merchant, amount, date, category }: Props) {
+  const form = useForm<ReceiptFormValues, unknown, ReceiptSchema>({
+    resolver: zodResolver(receiptSchema),
     defaultValues: {
       merchant: merchant || "",
       amount: typeof amount === "number" ? String(amount) : "",
       date: date || new Date(),
-      category: category || "",
+      category: category || "other",
     },
   });
 
@@ -66,7 +50,10 @@ export default function AddReceiptForm({
       throw new Error("Failed to fetch preferences");
     }
 
-    const jsonData = (await res.json()) as PreferencesResponseType;
+    const jsonData = (await res.json()) as ApiResponse<{
+      id: number;
+      currency: string;
+    }>;
     setCurrency(jsonData.data.currency);
     return jsonData;
   };
@@ -76,11 +63,11 @@ export default function AddReceiptForm({
     queryFn: fetchPreferences,
   });
 
-  const [message, setMessage] = useState<MessageType | null>(null);
+  const [message, setMessage] = useState<Message | null>(null);
 
   const navigate = useNavigate();
 
-  const saveReceipt = async (formData: AddReceiptSchemaType) => {
+  const saveReceipt = async (formData: ReceiptSchema) => {
     const res = await fetch(env.API_BASE_URL + "/api/receipts", {
       method: "POST",
       headers: {
@@ -94,7 +81,7 @@ export default function AddReceiptForm({
       throw new Error("We couldn't save the receipt, Please try again.");
     }
 
-    const jsonData = (await res.json()) as ResponseType;
+    const jsonData = (await res.json()) as ApiResponse;
     if (jsonData.success === false) {
       throw new Error(
         jsonData.message || "We couldn't save the receipt, Please try again.",
@@ -114,15 +101,20 @@ export default function AddReceiptForm({
     },
   });
 
-  const onSubmit = (data: AddReceiptSchemaType) => {
+  const onSubmit = (data: ReceiptSchema) => {
     setMessage(null);
-    console.log("formData: ", data);
+    if (!currency) {
+      return setMessage({
+        success: false,
+        message: "Please select the preferred currency in the account settings",
+      });
+    }
     mutation.mutate({
       merchant: data.merchant,
       amount: data.amount,
       category: data.category,
       date: data.date,
-      currencySymbol: "$",
+      currencySymbol: currency,
     });
   };
 
@@ -230,7 +222,7 @@ export default function AddReceiptForm({
               <FieldLabel htmlFor="category">Category</FieldLabel>
 
               <div className="flex flex-wrap gap-2">
-                {receiptCategories.map((category) => {
+                {RECEIPT_CATEGORIES.map((category) => {
                   const isSelected = category === field.value;
 
                   return (

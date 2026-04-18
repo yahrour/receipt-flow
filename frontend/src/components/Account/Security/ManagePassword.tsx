@@ -1,5 +1,4 @@
 import { EyeIcon, EyeOffIcon, KeyRound } from "lucide-react";
-import type { Props } from "./Security";
 import { useQuery } from "@tanstack/react-query";
 import { authClient } from "@/lib/auth";
 import { timeAgo } from "@/utils/time";
@@ -26,15 +25,16 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatePresence, motion } from "framer-motion";
+import type { SecurityContextState } from "./types";
+import type { Message } from "@/types";
 
-type UpdatePasswordSchemaType = z.infer<typeof updatePasswordSchema>;
-type MessageType = {
-  success: boolean;
-  message: string;
-};
+type UpdatePasswordSchema = z.infer<typeof updatePasswordSchema>;
 
-export function ManagePassword({ activePanel, setActivePanel }: Props) {
-  const form = useForm<UpdatePasswordSchemaType>({
+export function ManagePassword({
+  activeSection,
+  setActiveSection,
+}: SecurityContextState) {
+  const form = useForm<UpdatePasswordSchema>({
     resolver: zodResolver(updatePasswordSchema),
     defaultValues: {
       currentPassword: "",
@@ -50,7 +50,7 @@ export function ManagePassword({ activePanel, setActivePanel }: Props) {
     queryKey: ["accounts"],
     queryFn: () => authClient.listAccounts(),
   });
-  const [message, setMessage] = useState<MessageType | null>(null);
+  const [message, setMessage] = useState<Message | null>(null);
   const credentialAccount = accounts?.data?.find(
     (acc) => acc.providerId === "credential",
   );
@@ -60,7 +60,7 @@ export function ManagePassword({ activePanel, setActivePanel }: Props) {
     return <Skeleton className="h-18 rounded-2xl" />;
   }
 
-  const onSubmit = async (data: UpdatePasswordSchemaType) => {
+  const onSubmit = async (data: UpdatePasswordSchema) => {
     console.log("Submit");
     const { error } = await authClient.changePassword({
       newPassword: data.newPassword,
@@ -81,9 +81,9 @@ export function ManagePassword({ activePanel, setActivePanel }: Props) {
   return (
     <div>
       <div
-        className={`cursor-pointer bg-white hover:bg-white/50 transition group flex items-center gap-4 p-4 ${activePanel === "password" ? "rounded-tl-2xl rounded-tr-2xl" : "rounded-2xl"}`}
+        className={`cursor-pointer bg-white hover:bg-white/50 transition group flex items-center gap-4 p-4 ${activeSection === "password" ? "rounded-tl-2xl rounded-tr-2xl" : "rounded-2xl"}`}
         onClick={() => {
-          setActivePanel(activePanel === "password" ? null : "password");
+          setActiveSection(activeSection === "password" ? null : "password");
           form.reset();
           setMessage(null);
         }}
@@ -97,7 +97,7 @@ export function ManagePassword({ activePanel, setActivePanel }: Props) {
         </div>
       </div>
       <AnimatePresence>
-        {activePanel === "password" && (
+        {activeSection === "password" && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -242,7 +242,7 @@ export function ManagePassword({ activePanel, setActivePanel }: Props) {
                   onClick={() => {
                     form.reset();
                     setMessage(null);
-                    setActivePanel(null);
+                    setActiveSection(null);
                   }}
                 >
                   Cancel

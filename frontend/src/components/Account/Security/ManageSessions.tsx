@@ -1,5 +1,4 @@
 import { Clock, MonitorSmartphone } from "lucide-react";
-import type { Props } from "./Security";
 import { useQuery } from "@tanstack/react-query";
 import { authClient } from "@/lib/auth";
 import { UAParser } from "ua-parser-js";
@@ -8,8 +7,12 @@ import { Button } from "@/components/ui/button";
 import { queryClient } from "@/main";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AnimatePresence, motion } from "framer-motion";
+import type { SecurityContextState } from "./types";
 
-export function ManageSessions({ activePanel, setActivePanel }: Props) {
+export function ManageSessions({
+  activeSection,
+  setActiveSection,
+}: SecurityContextState) {
   const { data: sessions, isLoading } = useQuery({
     queryKey: ["device-sessions"],
     queryFn: () => authClient.listSessions(),
@@ -22,9 +25,9 @@ export function ManageSessions({ activePanel, setActivePanel }: Props) {
   return (
     <div>
       <div
-        className={`cursor-pointer bg-white hover:bg-white/50 transition group flex items-center gap-4 p-4 ${activePanel === "session" ? "rounded-tl-2xl rounded-tr-2xl" : "rounded-2xl"}`}
+        className={`cursor-pointer bg-white hover:bg-white/50 transition group flex items-center gap-4 p-4 ${activeSection === "session" ? "rounded-tl-2xl rounded-tr-2xl" : "rounded-2xl"}`}
         onClick={() =>
-          setActivePanel(activePanel === "session" ? null : "session")
+          setActiveSection(activeSection === "session" ? null : "session")
         }
       >
         <div className="bg-gray-100 p-2 rounded-full">
@@ -38,7 +41,7 @@ export function ManageSessions({ activePanel, setActivePanel }: Props) {
         </div>
       </div>
       <AnimatePresence>
-        {activePanel === "session" && (
+        {activeSection === "session" && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}

@@ -20,14 +20,14 @@ import {
 } from "../ui/input-group";
 import { Spinner } from "../ui/spinner";
 
-type SignInSchemaType = z.infer<typeof signInSchema>;
+type SignInSchema = z.infer<typeof signInSchema>;
 
 export default function SignUp() {
   const { data: session, isLoading } = useQuery({
     queryKey: ["session"],
     queryFn: () => authClient.getSession(),
   });
-  const form = useForm<SignInSchemaType>({
+  const form = useForm<SignInSchema>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
       email: "",
@@ -38,7 +38,7 @@ export default function SignUp() {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
-  const onSubmit = async (data: SignInSchemaType) => {
+  const onSubmit = async (data: SignInSchema) => {
     await authClient.signIn.email(
       {
         email: data.email,
