@@ -16,6 +16,7 @@ import {
 import { useMemo } from "react";
 import { Button } from "../ui/button";
 import { Link } from "react-router";
+import { Skeleton } from "../ui/skeleton";
 
 export default function Receipts() {
   const { data: receipts, isLoading } = useQuery({
@@ -51,7 +52,17 @@ export default function Receipts() {
   }, [receipts]);
 
   if (isLoading) {
-    return <p>Loading receipts...</p>;
+    return (
+      <div className="space-y-8">
+        <h3 className="text-xs font-semibold text-muted-foreground mb-4 tracking-wider">
+          TODAY
+        </h3>
+        <div className="space-y-3">
+          <Skeleton className="w-full h-16 rounded-md" />
+          <Skeleton className="w-full h-16 rounded-md" />
+        </div>
+      </div>
+    );
   }
 
   if (!receipts || receipts?.data.receipts.length === 0) {
