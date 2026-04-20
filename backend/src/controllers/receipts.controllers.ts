@@ -49,7 +49,8 @@ export async function getReceiptsController(
   next: NextFunction,
 ) {
   try {
-    const result = await getReceiptsService(req.user.id);
+    const nextCursor = req.query.nextCursor?.toString();
+    const result = await getReceiptsService(req.user.id, nextCursor);
     return ok(res, result, "Receipts fetched successfully", 200);
   } catch (e) {
     next(e);

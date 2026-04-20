@@ -9,6 +9,7 @@ import { env } from "../config/env.js";
 import sharp from "sharp";
 import fs from "fs/promises";
 import { PDFDocument } from "pdf-lib";
+import { config } from "../config/config.js";
 
 const genAI = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
 const prompt = `
@@ -108,13 +109,48 @@ export async function saveReceiptService(body: ReceiptType, userId: string) {
   }
 }
 
-export async function getReceiptsService(userId: string) {
+export async function getReceiptsService(
+  userId: string,
+  nextCursor: string | undefined,
+) {
   try {
-    const { rows } = await query(
-      "SELECT id, merchant, amount, receipt_date, category, currency FROM receipts WHERE user_id=$1",
-      [userId],
-    );
-    return rows;
+    let result;
+
+    const decodedCursor = nextCursor
+      ? Buffer.from(nextCursor, "base64").toString("utf-8")
+      : null;
+
+    if (decodedCursor) {
+      result = await query(
+        "SELECT id, merchant, amount, receipt_date, category, currency FROM receipts WHERE user_id=$1 AND id < $2 ORDER BY id DESC LIMIT $3",
+        [userId, decodedCursor, config.paginationLimit + 1],
+      );
+    } else {
+      result = await query(
+        "SELECT id, merchant, amount, receipt_date, category, currency FROM receipts WHERE user_id=$1 ORDER BY id DESC LIMIT $2",
+        [userId, config.paginationLimit + 1],
+      );
+    }
+
+    const hasNextPage = result.rowCount === config.paginationLimit + 1;
+
+    if (hasNextPage) {
+      result.rows.pop();
+    }
+
+    const lastItem = result.rows[result.rows.length - 1];
+    const newNextCursor =
+      hasNextPage && lastItem
+        ? Buffer.from(lastItem.id.toString(), "utf-8").toString("base64")
+        : null;
+
+    const response = {
+      receipts: result.rows,
+      nextCursor: newNextCursor,
+      hasNextPage,
+    };
+
+    return response;
   } catch {
     throw createError(500, "Failed to fetch receipts");
   }

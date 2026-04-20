@@ -4,7 +4,7 @@ import { createRoot } from "react-dom/client";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { RootLayout } from "@/layouts/RootLayout";
-import Home from "@/components/Home";
+import Home from "@/components/Home/Home";
 import Dashboard from "@/components/Dashboard";
 import Account from "@/components/Account/Account";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";

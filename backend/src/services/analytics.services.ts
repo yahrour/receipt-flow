@@ -16,7 +16,13 @@ export async function getMonthlySummary(
     [userId, month, year],
   );
 
-  return rows[0];
+  const data = {
+    total_amount: parseFloat(rows[0].total_amount),
+    total_receipts: rows[0].total_receipts,
+    average: parseFloat(rows[0].average),
+  };
+
+  return data;
 }
 
 export async function getYearlySpending(userId: string, year: number) {

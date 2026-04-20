@@ -20,7 +20,7 @@ export default function Account() {
   const session = data?.data?.user;
 
   return (
-    <div className="space-y-8 max-w-xl mx-auto">
+    <div className="space-y-8 mx-auto">
       <h1 className="text-3xl font-medium">Account</h1>
       <div className="space-y-4">
         <Header session={session} />

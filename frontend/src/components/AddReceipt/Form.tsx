@@ -19,6 +19,7 @@ import { useNavigate } from "react-router";
 import type { ApiResponse, Message } from "@/types";
 import { DEFAULT_CURRENCY, RECEIPT_CATEGORIES } from "@/constants";
 import type { ReceiptSchema } from "./types";
+import { queryClient } from "@/main";
 
 type ReceiptFormValues = z.input<typeof receiptSchema>;
 type Props = {
@@ -100,8 +101,9 @@ export default function Form({ merchant, amount, date, category }: Props) {
 
   const mutation = useMutation({
     mutationFn: saveReceipt,
-    onSuccess: () => {
+    onSuccess: async () => {
       form.reset();
+      await queryClient.invalidateQueries({ queryKey: ["receipts"] });
       void navigate("/");
     },
     onError: (error: Error) => {
