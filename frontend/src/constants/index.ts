@@ -1,5 +1,6 @@
 import {
   BarChart3,
+  Clock,
   Home,
   Plus,
   Settings,
@@ -34,8 +35,9 @@ export const ACCOUNT_TABS = [
 
 export const TABS = [
   { path: "/", label: "Feed", icon: Home },
+  { path: "/history", label: "History", icon: Clock },
   { path: "/add-receipt", label: "Add", icon: Plus },
-  { path: "/dashboard", label: "Dashboard", icon: BarChart3 },
+  { path: "/stats", label: "Stats", icon: BarChart3 },
   { path: "/account", label: "Account", icon: UserCircle },
 ] as const;
 

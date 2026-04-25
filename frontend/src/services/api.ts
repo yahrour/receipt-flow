@@ -37,10 +37,24 @@ export async function fetchAnalyticsSummary() {
   return jsonData;
 }
 
-export async function fetchReceipts() {
-  const res = await fetch(env.API_BASE_URL + "/api/receipts", {
-    credentials: "include",
-  });
+export async function fetchReceipts(
+  search: string | null,
+  category: string | null,
+  date: Date,
+  nextCursor: string | null | undefined = null,
+) {
+  const params = new URLSearchParams();
+  if (search) params.set("search", search);
+  if (category) params.set("category", category);
+  params.set("date", date.toISOString());
+  if (nextCursor) params.set("nextCursor", nextCursor);
+
+  const res = await fetch(
+    env.API_BASE_URL + `/api/receipts?${params.toString()}`,
+    {
+      credentials: "include",
+    },
+  );
 
   const jsonData = (await res.json().catch(() => null)) as ApiResponse<{
     receipts: {

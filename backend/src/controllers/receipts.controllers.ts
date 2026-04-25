@@ -50,7 +50,18 @@ export async function getReceiptsController(
 ) {
   try {
     const nextCursor = req.query.nextCursor?.toString();
-    const result = await getReceiptsService(req.user.id, nextCursor);
+    const search = req.query.search?.toString() || null;
+    const category = req.query.category?.toString() || null;
+    const date = req.query.date
+      ? new Date(req.query.date.toString())
+      : new Date();
+    const result = await getReceiptsService(
+      req.user.id,
+      nextCursor,
+      search,
+      category,
+      date,
+    );
     return ok(res, result, "Receipts fetched successfully", 200);
   } catch (e) {
     next(e);

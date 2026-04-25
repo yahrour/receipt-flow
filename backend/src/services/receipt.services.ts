@@ -112,6 +112,9 @@ export async function saveReceiptService(body: ReceiptType, userId: string) {
 export async function getReceiptsService(
   userId: string,
   nextCursor: string | undefined,
+  search: string | null,
+  category: string | null,
+  date: Date,
 ) {
   try {
     let result;
@@ -120,15 +123,54 @@ export async function getReceiptsService(
       ? Buffer.from(nextCursor, "base64").toString("utf-8")
       : null;
 
+    const year = date.getFullYear();
+    const month = date.getMonth();
+    const startOfMonth = new Date(year, month, 1);
+    const startOfNextMonth = new Date(year, month + 1, 1);
+    const startDate = `${startOfMonth.getFullYear()}-${String(startOfMonth.getMonth() + 1).padStart(2, "0")}-01`;
+    const endDate = `${startOfNextMonth.getFullYear()}-${String(startOfNextMonth.getMonth() + 1).padStart(2, "0")}-01`;
+
     if (decodedCursor) {
       result = await query(
-        "SELECT id, merchant, amount, receipt_date, category, currency FROM receipts WHERE user_id=$1 AND id < $2 ORDER BY id DESC LIMIT $3",
-        [userId, decodedCursor, config.paginationLimit + 1],
+        `SELECT id, merchant, amount, receipt_date, category, currency
+        FROM receipts
+        WHERE user_id=$1
+        AND id < $2
+        AND receipt_date >= $3
+        AND receipt_date < $4
+        AND ($5::text IS NULL OR LOWER(merchant) LIKE LOWER($5))
+        AND ($6::text IS NULL OR LOWER(category::text) LIKE LOWER($6))
+        ORDER BY id DESC
+        LIMIT $7`,
+        [
+          userId,
+          decodedCursor,
+          startDate,
+          endDate,
+          search ? `%${search}%` : null,
+          category ? `%${category}%` : null,
+          config.paginationLimit + 1,
+        ],
       );
     } else {
       result = await query(
-        "SELECT id, merchant, amount, receipt_date, category, currency FROM receipts WHERE user_id=$1 ORDER BY id DESC LIMIT $2",
-        [userId, config.paginationLimit + 1],
+        `SELECT id, merchant, amount, receipt_date, category, currency 
+        FROM receipts 
+        WHERE user_id=$1
+        AND receipt_date >= $2
+        AND receipt_date < $3
+        AND ($4::text IS NULL OR LOWER(merchant) LIKE LOWER($4))
+        AND ($5::text IS NULL OR LOWER(category::text) LIKE LOWER($5)) 
+        ORDER BY id DESC 
+        LIMIT $6`,
+        [
+          userId,
+          startDate,
+          endDate,
+          search ? `%${search}%` : null,
+          category ? `%${category}%` : null,
+          config.paginationLimit + 1,
+        ],
       );
     }
 

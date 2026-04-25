@@ -5,7 +5,6 @@ import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { RootLayout } from "@/layouts/RootLayout";
 import Home from "@/components/Home/Home";
-import Dashboard from "@/components/Dashboard";
 import Account from "@/components/Account/Account";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import SignIn from "./components/Auth/SignIn";
@@ -16,13 +15,16 @@ import ResetPassword from "./components/Auth/ResetPassword";
 import Security from "./components/Account/Security/Security";
 import AddReceipt from "./components/AddReceipt/AddReceipt";
 import Settings from "./components/Account/Settings/Settings";
+import Stats from "@/components/Stats";
+import History from "./components/History/History";
 
 const router = createBrowserRouter([
   {
     element: <RootLayout />,
     children: [
       { path: "/", Component: Home },
-      { path: "/dashboard", Component: Dashboard },
+      { path: "/history", Component: History },
+      { path: "/stats", Component: Stats },
       { path: "/account", Component: Account },
       { path: "/account/security", Component: Security },
       { path: "/account/settings", Component: Settings },

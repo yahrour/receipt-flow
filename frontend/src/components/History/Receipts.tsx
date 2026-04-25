@@ -1,5 +1,5 @@
 import { fetchReceipts, fetchUserPreferences } from "@/services/api";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
 import { format, isToday, isYesterday } from "date-fns";
 import {
   Car,
@@ -7,6 +7,7 @@ import {
   HeartPulse,
   Plane,
   ReceiptText,
+  SearchX,
   ShoppingBag,
   ShoppingBasket,
   UtensilsCrossed,
@@ -14,20 +15,37 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import { useMemo } from "react";
+import { Spinner } from "../ui/spinner";
 import { Button } from "../ui/button";
-import { Link } from "react-router";
-import { Skeleton } from "../ui/skeleton";
 
-export default function Receipts() {
-  const { data: receipts, isLoading } = useQuery({
-    queryFn: () => fetchReceipts(null, null, new Date()),
-    queryKey: ["receipts"],
-  });
+export default function Receipts({
+  search,
+  category,
+  date,
+}: {
+  search: string | null;
+  category: string | null;
+  date: Date;
+}) {
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery({
+      queryKey: ["receiptsTable", search, category, date],
+      queryFn: ({ pageParam }: { pageParam: string | null }) =>
+        fetchReceipts(search, category, date, pageParam),
+      initialPageParam: null as string | null,
+      getNextPageParam: (lastPage) =>
+        lastPage?.data.hasNextPage ? lastPage.data.nextCursor : undefined,
+    });
+
+  const receipts = useMemo(
+    () => data?.pages.flatMap((page) => page?.data.receipts ?? []) ?? [],
+    [data],
+  );
 
   const groupedReceipts = useMemo(() => {
-    if (!receipts?.data.receipts) return {};
+    if (!receipts) return {};
 
-    return receipts?.data.receipts.reduce(
+    return receipts.reduce(
       (acc, receipt) => {
         let label = "";
 
@@ -47,25 +65,19 @@ export default function Receipts() {
 
         return acc;
       },
-      {} as Record<string, typeof receipts.data.receipts>,
+      {} as Record<string, typeof receipts>,
     );
   }, [receipts]);
 
   if (isLoading) {
     return (
-      <div className="space-y-8">
-        <h3 className="text-xs font-semibold text-muted-foreground mb-4 tracking-wider">
-          TODAY
-        </h3>
-        <div className="space-y-3">
-          <Skeleton className="w-full h-16 rounded-md" />
-          <Skeleton className="w-full h-16 rounded-md" />
-        </div>
+      <div className="absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
+        <Spinner className="size-7" />
       </div>
     );
   }
 
-  if (!receipts || receipts?.data.receipts.length === 0) {
+  if (!receipts || receipts.length === 0) {
     return <ReceiptEmptyState />;
   }
 
@@ -89,6 +101,16 @@ export default function Receipts() {
           </div>
         </section>
       ))}
+      {receipts.length > 0 && (
+        <Button
+          variant="outline"
+          className="block mx-auto mt-4 cursor-pointer"
+          onClick={() => void fetchNextPage()}
+          disabled={!hasNextPage || isFetchingNextPage}
+        >
+          {isFetchingNextPage ? "Loading more..." : "Load More"}
+        </Button>
+      )}
     </div>
   );
 }
@@ -194,17 +216,15 @@ function ReceiptIcon({ category }: { category: string }) {
 
 function ReceiptEmptyState() {
   return (
-    <div className="flex flex-col items-center justify-center p-8 text-center">
-      <h3 className="text-lg font-semibold">No receipts yet</h3>
-      <p className="max-w-xs mt-1 mb-6 text-sm text-muted-foreground">
-        Scan your first receipt to start tracking your spending and getting
-        insights.
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-muted/50">
+        <SearchX className="w-8 h-8 text-muted-foreground" />
+      </div>
+      <h3 className="text-xl font-semibold">No receipts found</h3>
+      <p className="max-w-xs mt-2 mb-6 text-sm text-muted-foreground">
+        We couldn't find anything for your current search. Try removing your
+        filters or searching for something else.
       </p>
-      <Link to="/add-receipt">
-        <Button className="gap-2" variant="link">
-          Click here to Add Receipt
-        </Button>
-      </Link>
     </div>
   );
 }

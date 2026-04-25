@@ -20,6 +20,7 @@ import type { ApiResponse, Message } from "@/types";
 import { DEFAULT_CURRENCY, RECEIPT_CATEGORIES } from "@/constants";
 import type { ReceiptSchema } from "./types";
 import { queryClient } from "@/main";
+import { format } from "date-fns";
 
 type ReceiptFormValues = z.input<typeof receiptSchema>;
 type Props = {
@@ -80,7 +81,13 @@ export default function Form({ merchant, amount, date, category }: Props) {
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify(formData),
+      body: JSON.stringify({
+        merchant: formData.merchant,
+        amount: formData.amount,
+        category: formData.category,
+        currency: formData.currency,
+        date: format(formData.date, "yyyy-MM-dd"),
+      }),
       credentials: "include",
     });
 

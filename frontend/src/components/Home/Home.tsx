@@ -21,10 +21,7 @@ export default function Home() {
 
   return (
     <div className="space-y-8 mx-auto">
-      <div>
-        <h1 className="text-3xl font-medium">ReceiptFlow</h1>
-        <span className="text-gray-500">{format(now, "MMMM yyyy")}</span>
-      </div>
+      <h1 className="text-3xl font-medium">Feed</h1>
       <div className="flex flex-col justify-center items-center text-center gap-1">
         <span className="block text-gray-500 uppercase text-sm tracking-wider">
           Total spent · {format(now, "MMMM yyyy")}
