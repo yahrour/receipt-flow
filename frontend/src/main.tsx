@@ -15,7 +15,7 @@ import ResetPassword from "./components/Auth/ResetPassword";
 import Security from "./components/Account/Security/Security";
 import AddReceipt from "./components/AddReceipt/AddReceipt";
 import Settings from "./components/Account/Settings/Settings";
-import Stats from "@/components/Stats";
+import Stats from "@/components/Stats/Stats";
 import History from "./components/History/History";
 
 const router = createBrowserRouter([

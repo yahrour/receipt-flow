@@ -19,10 +19,20 @@ export async function fetchUserPreferences() {
   return jsonData;
 }
 
-export async function fetchAnalyticsSummary() {
-  const res = await fetch(env.API_BASE_URL + "/api/analytics/summary", {
-    credentials: "include",
-  });
+export async function fetchAnalyticsSummary(
+  month: number | null,
+  year: number | null,
+) {
+  const params = new URLSearchParams();
+  if (month) params.set("month", month.toString());
+  if (year) params.set("year", year.toString());
+
+  const res = await fetch(
+    env.API_BASE_URL + "/api/analytics/summary?" + params.toString(),
+    {
+      credentials: "include",
+    },
+  );
 
   const jsonData = (await res.json().catch(() => null)) as ApiResponse<{
     total_amount: number;
@@ -68,6 +78,66 @@ export async function fetchReceipts(
     nextCursor: string | null;
     hasNextPage: boolean;
   }> | null;
+
+  if (!res.ok) {
+    throw new Error(jsonData?.message || "Failed to fetch analytics");
+  }
+
+  return jsonData;
+}
+
+export async function fetchUserMonthlySpending(year: number | null) {
+  const params = new URLSearchParams();
+  if (year) {
+    params.set("year", year.toString());
+  }
+
+  const res = await fetch(
+    env.API_BASE_URL + "/api/analytics/months-spending?" + params.toString(),
+    {
+      credentials: "include",
+    },
+  );
+
+  const jsonData = (await res.json().catch(() => null)) as ApiResponse<
+    {
+      month: number;
+      total: number;
+    }[]
+  > | null;
+
+  if (!res.ok) {
+    throw new Error(jsonData?.message || "Failed to fetch analytics");
+  }
+
+  return jsonData;
+}
+
+export async function fetchUserCategorySpending(
+  month: number | null,
+  year: number | null,
+) {
+  const params = new URLSearchParams();
+  if (month) {
+    params.set("month", month.toString());
+  }
+  if (year) {
+    params.set("year", year.toString());
+  }
+
+  const res = await fetch(
+    env.API_BASE_URL + "/api/analytics/category-spending?" + params.toString(),
+    {
+      credentials: "include",
+    },
+  );
+
+  const jsonData = (await res.json().catch(() => null)) as ApiResponse<
+    {
+      category: (typeof RECEIPT_CATEGORIES)[number];
+      total: string;
+    }[]
+  > | null;
 
   if (!res.ok) {
     throw new Error(jsonData?.message || "Failed to fetch analytics");

@@ -28,7 +28,7 @@ export async function getMonthlySummary(
 export async function getYearlySpending(userId: string, year: number) {
   const { rows } = await query(
     `SELECT EXTRACT(MONTH FROM receipt_date) AS month,
-    SUM(amount) 
+    SUM(amount) AS total
     FROM receipts WHERE user_id=$1 
     AND EXTRACT(YEAR FROM receipt_date)=$2 
     GROUP BY month 

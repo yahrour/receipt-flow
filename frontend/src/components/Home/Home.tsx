@@ -9,7 +9,7 @@ import { Skeleton } from "../ui/skeleton";
 export default function Home() {
   const { data: analytics, isLoading: isLoadingAnalytics } = useQuery({
     queryKey: ["analytics", "analyticsSummary"],
-    queryFn: fetchAnalyticsSummary,
+    queryFn: () => fetchAnalyticsSummary(null, null),
   });
 
   const { data: preferences, isLoading: isLoadingPreferences } = useQuery({
