@@ -5,7 +5,6 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-  ChartLegend,
   type ChartConfig,
 } from "@/components/ui/chart";
 
@@ -58,74 +57,63 @@ export function CategorySpending({
       <span className="tracking-wider font-medium mb-4 block">
         Spending by Category
       </span>
-      <div className="">
+      <div>
         {spending?.data?.length === 0 ? (
           <p className="text-gray-500 text-sm">
             No spending data for this month.
           </p>
         ) : (
-          <ChartContainer config={chartConfig} className="h-62.5 max-w-sm">
-            <PieChart>
-              <Pie
-                data={chartData}
-                dataKey="total"
-                nameKey="category"
-                cx="35%"
-                cy="50%"
-                innerRadius={60}
-                outerRadius={85}
-                paddingAngle={3}
-              />
-              <ChartTooltip
-                content={<ChartTooltipContent nameKey="category" />}
-              />
-              <ChartLegend
-                layout="vertical"
-                align="right"
-                verticalAlign="middle"
-                content={({ payload }) => (
-                  <ul className="flex flex-col gap-2 pl-2">
-                    {payload?.map((entry) => {
-                      const itemTotal =
-                        (
-                          entry.payload as
-                            | (typeof chartData)[number]
-                            | undefined
-                        )?.total ?? 0;
-                      const percentage =
-                        total > 0
-                          ? ((itemTotal / total) * 100).toFixed(0)
-                          : "0";
-                      const fill =
-                        (
-                          entry.payload as
-                            | (typeof chartData)[number]
-                            | undefined
-                        )?.fill ?? "#94a3b8";
+          <div className="flex flex-col items-center sm:flex-row sm:items-center gap-4">
+            {/* Chart — no legend inside */}
+            <ChartContainer
+              config={chartConfig}
+              className="h-50 w-50 shrink-0 [&>svg]:overflow-visible"
+            >
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  dataKey="total"
+                  nameKey="category"
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={85}
+                  paddingAngle={3}
+                />
+                <ChartTooltip
+                  content={<ChartTooltipContent nameKey="category" />}
+                />
+              </PieChart>
+            </ChartContainer>
 
-                      return (
-                        <li
-                          key={entry.value}
-                          className="flex items-center gap-2 text-sm min-w-0"
-                        >
-                          <span
-                            className="inline-block size-2.5 rounded-full shrink-0"
-                            style={{ backgroundColor: fill }}
-                          />
-                          <span className="text-gray-600 capitalize truncate">
-                            {entry.value}
-                          </span>
-                          <span className="ml-auto pl-3 font-medium text-gray-900 shrink-0">
-                            {percentage}%
-                          </span>
-                        </li>
-                      );
-                    })}
-                  </ul>
-                )}
-              />
-            </PieChart>
-          </ChartContainer>
+            {/* Legend — plain ul, full Tailwind control */}
+            <ul className="flex flex-col gap-2 w-full">
+              {chartData.map((item) => {
+                const percentage =
+                  total > 0 ? ((item.total / total) * 100).toFixed(0) : "0";
+                return (
+                  <li
+                    key={item.category}
+                    className="flex items-center gap-2 text-sm sm:max-w-37.5"
+                  >
+                    <span
+                      className="inline-block size-2.5 rounded-full shrink-0"
+                      style={{
+                        backgroundColor:
+                          CATEGORY_COLORS[item.category] ?? "#94a3b8",
+                      }}
+                    />
+                    <span className="text-gray-600 capitalize">
+                      {item.category}
+                    </span>
+                    <span className="ml-auto font-medium text-gray-900">
+                      {percentage}%
+                    </span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         )}
       </div>
     </div>

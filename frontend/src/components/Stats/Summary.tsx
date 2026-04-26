@@ -20,7 +20,7 @@ export function Summary({ date }: { date: Date }) {
   });
 
   return (
-    <div className="flex flex-wrap gap-4">
+    <div className="flex flex-wrap gap-4 max-sm:flex-col">
       <StatCard
         icon={DollarSign}
         iconBgClassName="bg-blue-100"
