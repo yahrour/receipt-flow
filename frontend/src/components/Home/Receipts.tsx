@@ -77,13 +77,15 @@ export default function Receipts() {
             {dateLabel}
           </h3>
 
-          <div className="space-y-3">
-            {receipts.map((receipt) => (
+          <div>
+            {receipts.map((receipt, index) => (
               <Receipt
                 key={receipt.id}
                 merchant={receipt.merchant}
                 amount={receipt.amount}
                 category={receipt.category}
+                firstOne={index === 0}
+                lastOne={index === receipts.length - 1}
               />
             ))}
           </div>
@@ -97,17 +99,23 @@ function Receipt({
   merchant,
   category,
   amount,
+  firstOne = false,
+  lastOne = false,
 }: {
   merchant: string;
   category: string;
   amount: number;
+  firstOne: boolean;
+  lastOne: boolean;
 }) {
   const { data: preferences } = useQuery({
     queryKey: ["preferences"],
     queryFn: fetchUserPreferences,
   });
   return (
-    <div className="bg-white flex justify-between items-center p-4 rounded-md">
+    <div
+      className={`bg-white flex justify-between items-center p-4 ${lastOne ? (firstOne ? "rounded-md" : "rounded-b-md") : "rounded-t-md border-b"}`}
+    >
       <div className="flex items-center gap-4">
         <ReceiptIcon category={category} />
         <div>
@@ -132,42 +140,42 @@ function ReceiptIcon({ category }: { category: string }) {
   > = {
     groceries: {
       icon: ShoppingBasket,
-      colorClass: "text-green-600",
+      colorClass: "text-green-400",
       bgClass: "bg-green-100",
     },
     restaurant: {
       icon: UtensilsCrossed,
-      colorClass: "text-orange-600",
+      colorClass: "text-orange-400",
       bgClass: "bg-orange-100",
     },
     transport: {
       icon: Car,
-      colorClass: "text-blue-600",
+      colorClass: "text-blue-400",
       bgClass: "bg-blue-100",
     },
     entertainment: {
       icon: Film,
-      colorClass: "text-purple-600",
+      colorClass: "text-purple-400",
       bgClass: "bg-purple-100",
     },
     health: {
       icon: HeartPulse,
-      colorClass: "text-red-600",
+      colorClass: "text-red-400",
       bgClass: "bg-red-100",
     },
     shopping: {
       icon: ShoppingBag,
-      colorClass: "text-pink-600",
+      colorClass: "text-pink-400",
       bgClass: "bg-pink-100",
     },
     utilities: {
       icon: Zap,
-      colorClass: "text-yellow-600",
+      colorClass: "text-yellow-400",
       bgClass: "bg-yellow-100",
     },
     travel: {
       icon: Plane,
-      colorClass: "text-cyan-600",
+      colorClass: "text-cyan-400",
       bgClass: "bg-cyan-100",
     },
   };
@@ -185,9 +193,9 @@ function ReceiptIcon({ category }: { category: string }) {
 
   return (
     <div
-      className={`${bgClass} p-3 rounded-md inline-flex items-center justify-center`}
+      className={`${bgClass} p-2.5 rounded-md inline-flex items-center justify-center`}
     >
-      <Icon className={`${colorClass} size-5`} />
+      <Icon className={`${colorClass} size-5 stroke-2`} />
     </div>
   );
 }
@@ -201,7 +209,7 @@ function ReceiptEmptyState() {
         insights.
       </p>
       <Link to="/add-receipt">
-        <Button className="gap-2" variant="link">
+        <Button className="gap-2 cursor-pointer" variant="link">
           Click here to Add Receipt
         </Button>
       </Link>

@@ -7,7 +7,7 @@ export function BottomTabBar() {
   const { pathname } = useLocation();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 mx-auto w-full max-w-xl">
+    <div className="fixed bottom-0 left-0 right-0 z-50 mx-auto w-full max-w-lg">
       <nav className="bg-white/70 mx-3 mb-3 flex items-center justify-between rounded-xl backdrop-blur-xl border border-border/50 shadow-(--shadow-soft) px-2 py-1.5">
         {TABS.map((tab) => {
           const isActive =

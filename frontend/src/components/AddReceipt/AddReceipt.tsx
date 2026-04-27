@@ -1,11 +1,12 @@
 import { authClient } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
-import { useNavigate } from "react-router";
 import { ArrowLeft } from "lucide-react";
 import type { ReceiptSchema } from "./types";
 import Form from "./Form";
 import Upload from "./Upload";
+import AuthRequired from "../AuthRequired";
+import { Spinner } from "../ui/spinner";
 
 export default function AddReceipt() {
   const { data: session, isLoading } = useQuery({
@@ -13,14 +14,19 @@ export default function AddReceipt() {
     queryFn: () => authClient.getSession(),
   });
 
-  const navigate = useNavigate();
   const [data, setData] = useState<ReceiptSchema | null>(null);
   const [step, setStep] = useState<"upload" | "form">("upload");
 
   if (isLoading) {
-    return <p>Loading</p>;
+    return (
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Spinner className="size-7" />
+      </div>
+    );
   }
-  if (!session?.data?.user) void navigate("/signIn", { replace: true });
+  if (!session?.data?.user) {
+    return <AuthRequired />;
+  }
 
   return (
     <div className="space-y-8 max-w-xl mx-auto">

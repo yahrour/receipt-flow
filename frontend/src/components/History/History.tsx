@@ -2,11 +2,30 @@ import Receipts from "./Receipts";
 import { useState } from "react";
 import { ActionBar } from "./ActionBar";
 import { ReceiptsTable } from "./ReceiptsTable";
+import { useQuery } from "@tanstack/react-query";
+import { authClient } from "@/lib/auth";
+import { Spinner } from "../ui/spinner";
+import AuthRequired from "../AuthRequired";
 
 export default function History() {
+  const { data: session, isLoading } = useQuery({
+    queryKey: ["session"],
+    queryFn: () => authClient.getSession(),
+  });
   const [search, setSearch] = useState<string | null>(null);
   const [category, setCategory] = useState<string | null>(null);
   const [date, setDate] = useState<Date>(new Date());
+
+  if (isLoading) {
+    return (
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Spinner className="size-7" />
+      </div>
+    );
+  }
+  if (!session?.data?.user) {
+    return <AuthRequired />;
+  }
 
   return (
     <div className="space-y-8 mx-auto">

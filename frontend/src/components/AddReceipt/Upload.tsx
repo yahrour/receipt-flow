@@ -135,7 +135,7 @@ export default function Upload({
         </div>
       ) : (
         <div className="flex flex-col items-center justify-center gap-2">
-          <Spinner className="size-5" />
+          <Spinner />
           <p className="text-gray-600">Analyzing receipt...</p>
         </div>
       )}

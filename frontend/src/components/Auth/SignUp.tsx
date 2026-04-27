@@ -84,7 +84,13 @@ export default function SignUp() {
     }
   };
 
-  if (isLoading) return <Spinner className="size-8" />;
+  if (isLoading) {
+    return (
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Spinner className="size-7" />
+      </div>
+    );
+  }
   if (session?.data?.user) void navigate("/account", { replace: true });
 
   return (

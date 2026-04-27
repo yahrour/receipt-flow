@@ -24,7 +24,6 @@ export default function Account() {
       <h1 className="text-3xl font-medium">Account</h1>
       <div className="space-y-4">
         <Header session={session} />
-        <SignMethods session={session} />
         {session && (
           <div className="space-y-2">
             {ACCOUNT_TABS.map((tab) => (
@@ -38,6 +37,7 @@ export default function Account() {
             ))}
           </div>
         )}
+        <SignMethods session={session} />
       </div>
     </div>
   );

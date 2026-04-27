@@ -4,9 +4,17 @@ import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
 import Summary from "./Summary";
 import Receipts from "./Receipts";
-import { Skeleton } from "../ui/skeleton";
+import { authClient } from "@/lib/auth";
+import { Spinner } from "../ui/spinner";
+import AuthRequired from "../AuthRequired";
+import LoadingDots from "../LoadingDots";
 
 export default function Home() {
+  const { data: session, isLoading } = useQuery({
+    queryKey: ["session"],
+    queryFn: () => authClient.getSession(),
+  });
+
   const { data: analytics, isLoading: isLoadingAnalytics } = useQuery({
     queryKey: ["analytics", "analyticsSummary"],
     queryFn: () => fetchAnalyticsSummary(null, null),
@@ -19,6 +27,17 @@ export default function Home() {
 
   const now = new Date();
 
+  if (isLoading) {
+    return (
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+        <Spinner className="size-7" />
+      </div>
+    );
+  }
+  if (!session?.data?.user) {
+    return <AuthRequired />;
+  }
+
   return (
     <div className="space-y-8 mx-auto">
       <h1 className="text-3xl font-medium">Feed</h1>
@@ -28,7 +47,9 @@ export default function Home() {
         </span>
         <div className="flex justify-center gap-1 text-5xl font-bold">
           {isLoadingPreferences || isLoadingAnalytics ? (
-            <Skeleton className="w-40 h-12 rounded-none" />
+            <div className="h-12 flex justify-center items-center">
+              <LoadingDots />
+            </div>
           ) : (
             <>
               <span>{preferences?.data.currency || DEFAULT_CURRENCY}</span>

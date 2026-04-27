@@ -2,7 +2,7 @@ import { DEFAULT_CURRENCY } from "@/constants";
 import { fetchAnalyticsSummary, fetchUserPreferences } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { Calculator, Receipt } from "lucide-react";
-import { Skeleton } from "../ui/skeleton";
+import LoadingDots from "../LoadingDots";
 
 export default function Summary() {
   const { data: analytics, isLoading: isLoadingAnalytics } = useQuery({
@@ -23,7 +23,7 @@ export default function Summary() {
             <Receipt className="text-green-500 size-5" />
           </div>
           {isLoadingAnalytics ? (
-            <Skeleton className="w-3 h-4" />
+            <LoadingDots />
           ) : (
             <span className="font-bold">{analytics?.data.total_receipts}</span>
           )}
@@ -36,7 +36,7 @@ export default function Summary() {
             <Calculator className="text-purple-500 size-5" />
           </div>
           {isLoadingAnalytics || isLoadingPreferences ? (
-            <Skeleton className="w-20 h-6" />
+            <LoadingDots />
           ) : (
             <span className="font-bold">
               {preferences?.data.currency || DEFAULT_CURRENCY}{" "}
