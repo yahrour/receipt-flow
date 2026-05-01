@@ -1,6 +1,6 @@
 import { receiptSchema } from "@/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CircleAlert, Store } from "lucide-react";
+import { Store } from "lucide-react";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import type z from "zod";
@@ -12,15 +12,15 @@ import {
 } from "../ui/input-group";
 import { Button } from "../ui/button";
 import { Spinner } from "../ui/spinner";
-import { DatePicker } from "./DatePicker";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { env } from "@/config/env";
 import { useNavigate } from "react-router";
 import type { ApiResponse, Message } from "@/types";
 import { DEFAULT_CURRENCY, RECEIPT_CATEGORIES } from "@/constants";
-import type { ReceiptSchema } from "./types";
 import { queryClient } from "@/main";
 import { format } from "date-fns";
+import type { ReceiptSchema } from "../AddReceipt/types";
+import { DatePicker } from "../AddReceipt/DatePicker";
 
 type ReceiptFormValues = z.input<typeof receiptSchema>;
 type Props = {
@@ -28,16 +28,23 @@ type Props = {
   amount?: number;
   date?: Date;
   category?: (typeof RECEIPT_CATEGORIES)[number];
+  id?: number;
 };
 
-export default function Form({ merchant, amount, date, category }: Props) {
+export default function EditReceiptForm({
+  merchant,
+  amount,
+  date,
+  category,
+  id,
+}: Props) {
   const [currency, setCurrency] = useState<string | null>(null);
   const form = useForm<ReceiptFormValues, unknown, ReceiptSchema>({
     resolver: zodResolver(receiptSchema),
     defaultValues: {
       merchant: merchant || "",
       amount: typeof amount === "number" ? String(amount) : amount,
-      date: date || new Date(),
+      date: date ? new Date(date) : new Date(),
       category: category || "other",
       currency: currency || DEFAULT_CURRENCY,
     },
@@ -76,8 +83,8 @@ export default function Form({ merchant, amount, date, category }: Props) {
   const navigate = useNavigate();
 
   const saveReceipt = async (formData: ReceiptSchema) => {
-    const res = await fetch(env.API_BASE_URL + "/api/receipts", {
-      method: "POST",
+    const res = await fetch(env.API_BASE_URL + "/api/receipts/" + id, {
+      method: "PUT",
       headers: {
         "Content-Type": "application/json",
       },
@@ -144,23 +151,6 @@ export default function Form({ merchant, amount, date, category }: Props) {
       onSubmit={form.handleSubmit(onSubmit)}
       className="w-full flex flex-col gap-4"
     >
-      <div
-        role="note"
-        className="flex items-center gap-2 rounded-xl border border-destructive/20 bg-destructive/10 px-3 py-2"
-      >
-        <CircleAlert
-          size={18}
-          aria-hidden="true"
-          className="mt-0.5 shrink-0 text-destructive"
-        />
-
-        <div className="space-y-0.5">
-          <p className="text-sm">Review before saving</p>
-          <p className="text-sm text-muted-foreground">
-            Review the extracted details and edit if needed.
-          </p>
-        </div>
-      </div>
       <FieldGroup className="flex flex-col gap-4">
         <Controller
           name="merchant"
@@ -280,7 +270,7 @@ export default function Form({ merchant, amount, date, category }: Props) {
         className="w-full py-5 cursor-pointer "
         disabled={form.formState.isSubmitting}
       >
-        {form.formState.isSubmitting ? <Spinner /> : "Confirm & Save"}
+        {form.formState.isSubmitting ? <Spinner /> : "Save"}
       </Button>
     </form>
   );

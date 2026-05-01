@@ -1,4 +1,4 @@
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation, useQuery } from "@tanstack/react-query";
 import {
   Table,
   TableBody,
@@ -7,7 +7,11 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-import { fetchReceipts, fetchUserPreferences } from "@/services/api";
+import {
+  fetchReceipts,
+  fetchUserPreferences,
+  handleDeleteReceipt,
+} from "@/services/api";
 import { Spinner } from "../ui/spinner";
 import { format } from "date-fns";
 import {
@@ -18,11 +22,17 @@ import {
   ReceiptText,
   ShoppingBag,
   ShoppingBasket,
+  Trash2,
   UtensilsCrossed,
   Zap,
   type LucideIcon,
 } from "lucide-react";
 import { Button } from "../ui/button";
+import { toast } from "react-toastify";
+import { queryClient } from "@/main";
+import { EditReceiptDialog } from "../Receipt/EditReceipt";
+import { ReceiptEmptyState } from "../Receipt/ReceiptEmptyState";
+
 export function ReceiptsTable({
   search,
   category,
@@ -38,8 +48,9 @@ export function ReceiptsTable({
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
+    refetch,
   } = useInfiniteQuery({
-    queryKey: ["receiptsTable", search, category, date],
+    queryKey: ["receipts", search, category, date],
     queryFn: ({ pageParam }: { pageParam: string | null }) =>
       fetchReceipts(search, category, date, pageParam),
     initialPageParam: null as string | null,
@@ -55,6 +66,17 @@ export function ReceiptsTable({
     queryKey: ["preferences"],
   });
 
+  const mutate = useMutation({
+    mutationFn: handleDeleteReceipt,
+    onSuccess: async () => {
+      void queryClient.invalidateQueries({ queryKey: ["receipts"] });
+      await refetch();
+    },
+    onError: (error) => {
+      console.error("Failed to delete receipt:", error);
+    },
+  });
+
   if (isLoadingReceipts || isLoadingPreferences) {
     return (
       <div className="absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]">
@@ -63,44 +85,91 @@ export function ReceiptsTable({
     );
   }
 
+  const handleDelete = async (id: number) => {
+    const toastId = toast.loading("Deleting...", {
+      autoClose: 500,
+      closeOnClick: true,
+      draggable: true,
+      position: "top-center",
+    });
+    const result = await mutate.mutateAsync(id);
+    if (result?.success) {
+      toast.update(toastId, {
+        render: "Receipt deleted",
+        type: "success",
+        isLoading: false,
+      });
+    } else {
+      toast.update(toastId, {
+        render: "Failed to delete receipt",
+        type: "error",
+        isLoading: false,
+      });
+    }
+  };
+
   return (
     <>
-      <div className="bg-white rounded-lg border overflow-hidden">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Date</TableHead>
-              <TableHead className="text-left">Merchant</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead className="text-right">Amount</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {receipts.map((receipt) => (
-              <TableRow key={receipt.id}>
-                <TableCell className="font-medium text-gray-500">
-                  {format(receipt.receipt_date, "MMM dd, yyyy")}
-                </TableCell>
-                <TableCell
-                  className="font-medium capitalize"
-                  title={receipt.merchant}
-                >
-                  {receipt.merchant.slice(0, 20) +
-                    (receipt.merchant.length > 20 ? "..." : "")}
-                </TableCell>
-                <TableCell>
-                  <ReceiptIcon category={receipt.category} />
-                </TableCell>
-                <TableCell className="text-right font-medium space-x-0.5">
-                  <span>-</span>
-                  <span>{preferences?.data.currency}</span>
-                  <span>{receipt.amount}</span>
-                </TableCell>
+      {receipts.length === 0 ? (
+        <div className="w-full! flex justify-center items-center">
+          <ReceiptEmptyState />
+        </div>
+      ) : (
+        <div className="bg-white rounded-lg border overflow-hidden">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead className="text-left">Merchant</TableHead>
+                <TableHead>Category</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+                <TableHead className="w-5"></TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
+            </TableHeader>
+            <TableBody>
+              {receipts.map((receipt) => (
+                <TableRow key={receipt.id}>
+                  <TableCell className="font-medium text-gray-500">
+                    {format(receipt.receipt_date, "MMM dd, yyyy")}
+                  </TableCell>
+                  <TableCell
+                    className="font-medium capitalize"
+                    title={receipt.merchant}
+                  >
+                    {receipt.merchant.slice(0, 20) +
+                      (receipt.merchant.length > 20 ? "..." : "")}
+                  </TableCell>
+                  <TableCell>
+                    <ReceiptIcon category={receipt.category} />
+                  </TableCell>
+                  <TableCell className="text-right font-medium space-x-0.5">
+                    <span>-</span>
+                    <span>{preferences?.data.currency}</span>
+                    <span>{receipt.amount}</span>
+                  </TableCell>
+                  <TableCell className="flex items-center justify-end">
+                    <EditReceiptDialog
+                      id={receipt.id}
+                      merchant={receipt.merchant}
+                      amount={receipt.amount}
+                      date={receipt.receipt_date}
+                      category={receipt.category}
+                      showLabel={false}
+                    />
+                    <Button
+                      onClick={() => void handleDelete(receipt.id)}
+                      variant="ghost"
+                      className="cursor-pointer flex flex-col gap-1 justify-center hover:bg-transparent"
+                    >
+                      <Trash2 className="size-5 text-red-600" />
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      )}
       {receipts.length > 0 && (
         <Button
           variant="outline"

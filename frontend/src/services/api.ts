@@ -145,3 +145,18 @@ export async function fetchUserCategorySpending(
 
   return jsonData;
 }
+
+export async function handleDeleteReceipt(receiptId: number) {
+  const res = await fetch(env.API_BASE_URL + `/api/receipts/${receiptId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  const jsonData = (await res.json().catch(() => null)) as ApiResponse | null;
+
+  if (!res.ok) {
+    throw new Error(jsonData?.message || "Failed to delete receipt");
+  }
+
+  return jsonData;
+}

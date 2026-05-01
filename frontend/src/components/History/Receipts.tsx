@@ -1,22 +1,12 @@
-import { fetchReceipts, fetchUserPreferences } from "@/services/api";
-import { useInfiniteQuery, useQuery } from "@tanstack/react-query";
+import { fetchReceipts } from "@/services/api";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { format, isToday, isYesterday } from "date-fns";
-import {
-  Car,
-  Film,
-  HeartPulse,
-  Plane,
-  ReceiptText,
-  SearchX,
-  ShoppingBag,
-  ShoppingBasket,
-  UtensilsCrossed,
-  Zap,
-  type LucideIcon,
-} from "lucide-react";
 import { useMemo } from "react";
 import { Spinner } from "../ui/spinner";
 import { Button } from "../ui/button";
+import { Separator } from "../ui/separator";
+import { ReceiptEmptyState } from "../Receipt/ReceiptEmptyState";
+import { Receipt } from "../Receipt/Receipt";
 
 export default function Receipts({
   search,
@@ -29,7 +19,7 @@ export default function Receipts({
 }) {
   const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useInfiniteQuery({
-      queryKey: ["receiptsTable", search, category, date],
+      queryKey: ["receipts", search, category, date],
       queryFn: ({ pageParam }: { pageParam: string | null }) =>
         fetchReceipts(search, category, date, pageParam),
       initialPageParam: null as string | null,
@@ -89,14 +79,16 @@ export default function Receipts({
             {dateLabel}
           </h3>
 
-          <div className="space-y-3">
-            {receipts.map((receipt) => (
-              <Receipt
-                key={receipt.id}
-                merchant={receipt.merchant}
-                amount={receipt.amount}
-                category={receipt.category}
-              />
+          <div>
+            {receipts.map((receipt, index) => (
+              <div key={receipt.id}>
+                <Receipt
+                  receipt={{ ...receipt, date }}
+                  firstOne={index === 0}
+                  lastOne={index === receipts.length - 1}
+                />
+                {index !== receipts.length - 1 && <Separator />}
+              </div>
             ))}
           </div>
         </section>
@@ -111,120 +103,6 @@ export default function Receipts({
           {isFetchingNextPage ? "Loading more..." : "Load More"}
         </Button>
       )}
-    </div>
-  );
-}
-
-function Receipt({
-  merchant,
-  category,
-  amount,
-}: {
-  merchant: string;
-  category: string;
-  amount: number;
-}) {
-  const { data: preferences } = useQuery({
-    queryKey: ["preferences"],
-    queryFn: fetchUserPreferences,
-  });
-  return (
-    <div className="bg-white flex justify-between items-center p-4 rounded-md">
-      <div className="flex items-center gap-4">
-        <ReceiptIcon category={category} />
-        <div>
-          <p className="font-medium capitalize m-0 p-0">{merchant}</p>
-          <span className="text-gray-500 capitalize text-sm">{category}</span>
-        </div>
-      </div>
-      <div className="font-medium space-x-0.5">
-        <span>-</span>
-        <span>{preferences?.data.currency}</span>
-        <span>{amount}</span>
-      </div>
-    </div>
-  );
-}
-
-function ReceiptIcon({ category }: { category: string }) {
-  // 1. Define the configuration for each category
-  const configs: Record<
-    string,
-    { icon: LucideIcon; colorClass: string; bgClass: string }
-  > = {
-    groceries: {
-      icon: ShoppingBasket,
-      colorClass: "text-green-400",
-      bgClass: "bg-green-100",
-    },
-    restaurant: {
-      icon: UtensilsCrossed,
-      colorClass: "text-orange-400",
-      bgClass: "bg-orange-100",
-    },
-    transport: {
-      icon: Car,
-      colorClass: "text-blue-400",
-      bgClass: "bg-blue-100",
-    },
-    entertainment: {
-      icon: Film,
-      colorClass: "text-purple-400",
-      bgClass: "bg-purple-100",
-    },
-    health: {
-      icon: HeartPulse,
-      colorClass: "text-red-400",
-      bgClass: "bg-red-100",
-    },
-    shopping: {
-      icon: ShoppingBag,
-      colorClass: "text-pink-400",
-      bgClass: "bg-pink-100",
-    },
-    utilities: {
-      icon: Zap,
-      colorClass: "text-yellow-400",
-      bgClass: "bg-yellow-100",
-    },
-    travel: {
-      icon: Plane,
-      colorClass: "text-cyan-400",
-      bgClass: "bg-cyan-100",
-    },
-  };
-
-  // 2. Get the config based on the category, or fallback to default
-  const {
-    icon: Icon,
-    colorClass,
-    bgClass,
-  } = configs[category.toLowerCase()] || {
-    icon: ReceiptText,
-    colorClass: "text-slate-600",
-    bgClass: "bg-slate-100",
-  };
-
-  return (
-    <div
-      className={`${bgClass} p-2.5 rounded-md inline-flex items-center justify-center`}
-    >
-      <Icon className={`${colorClass} size-5 stroke-2`} />
-    </div>
-  );
-}
-
-function ReceiptEmptyState() {
-  return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
-      <div className="flex items-center justify-center w-16 h-16 mb-4 rounded-full bg-muted/50">
-        <SearchX className="w-8 h-8 text-muted-foreground" />
-      </div>
-      <h3 className="text-xl font-semibold">No receipts found</h3>
-      <p className="max-w-xs mt-2 mb-6 text-sm text-muted-foreground">
-        We couldn't find anything for your current search. Try removing your
-        filters or searching for something else.
-      </p>
     </div>
   );
 }
