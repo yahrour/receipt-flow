@@ -1,12 +1,12 @@
+import { Receipt } from "@/components/Receipt/Receipt";
+import { ReceiptEmptyState } from "@/components/Receipt/ReceiptEmptyState";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import { fetchReceipts } from "@/services/api";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { format, isToday, isYesterday } from "date-fns";
 import { useMemo } from "react";
-import { Spinner } from "../ui/spinner";
-import { Button } from "../ui/button";
-import { Separator } from "../ui/separator";
-import { ReceiptEmptyState } from "../Receipt/ReceiptEmptyState";
-import { Receipt } from "../Receipt/Receipt";
 
 export default function Receipts({
   search,

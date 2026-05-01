@@ -6,13 +6,13 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "../ui/table";
+} from "../../components/ui/table";
 import {
   fetchReceipts,
   fetchUserPreferences,
   handleDeleteReceipt,
 } from "@/services/api";
-import { Spinner } from "../ui/spinner";
+import { Spinner } from "../../components/ui/spinner";
 import { format } from "date-fns";
 import {
   Car,
@@ -27,11 +27,11 @@ import {
   Zap,
   type LucideIcon,
 } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "../../components/ui/button";
 import { toast } from "react-toastify";
 import { queryClient } from "@/main";
-import { EditReceiptDialog } from "../Receipt/EditReceipt";
-import { ReceiptEmptyState } from "../Receipt/ReceiptEmptyState";
+import { EditReceiptDialog } from "../../components/Receipt/EditReceipt";
+import { ReceiptEmptyState } from "../../components/Receipt/ReceiptEmptyState";
 
 export function ReceiptsTable({
   search,

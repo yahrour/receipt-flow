@@ -2,12 +2,17 @@ import { signUpSchema } from "@/schema";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
-import { Input } from "../ui/input";
-import { Button } from "../ui/button";
-import { Separator } from "../ui/separator";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Separator } from "@/components/ui/separator";
 import { Link, useNavigate } from "react-router";
-import { GoogleAuthButton } from "./GoogleAuthButton";
+import { GoogleAuthButton } from "@/components/GoogleAuthButton";
 import { authClient } from "@/lib/auth";
 import { useState } from "react";
 import { env } from "@/config/env";
@@ -17,13 +22,13 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "../ui/input-group";
-import { Spinner } from "../ui/spinner";
+} from "@/components/ui/input-group";
+import { Spinner } from "@/components/ui/spinner";
 import type { Message } from "@/types";
 
 type SignUpSchema = z.infer<typeof signUpSchema>;
 
-export default function SignUp() {
+export function SignUp() {
   const { data: session, isLoading } = useQuery({
     queryKey: ["session"],
     queryFn: () => authClient.getSession(),

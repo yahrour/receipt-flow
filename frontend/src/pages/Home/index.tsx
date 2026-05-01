@@ -1,15 +1,15 @@
+import AuthRequired from "@/components/AuthRequired";
+import LoadingDots from "@/components/LoadingDots";
+import { Spinner } from "@/components/ui/spinner";
 import { DEFAULT_CURRENCY } from "@/constants";
+import { authClient } from "@/lib/auth";
 import { fetchAnalyticsSummary, fetchUserPreferences } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { format } from "date-fns";
-import Summary from "./Summary";
-import Receipts from "./Receipts";
-import { authClient } from "@/lib/auth";
-import { Spinner } from "../ui/spinner";
-import AuthRequired from "../AuthRequired";
-import LoadingDots from "../LoadingDots";
+import { Summary } from "./Summary";
+import { Receipts } from "./Receipts";
 
-export default function Home() {
+export function Home() {
   const { data: session, isLoading } = useQuery({
     queryKey: ["session"],
     queryFn: () => authClient.getSession(),

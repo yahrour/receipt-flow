@@ -1,13 +1,13 @@
+import { Receipt } from "@/components/Receipt/Receipt";
+import { ReceiptEmptyState } from "@/components/Receipt/ReceiptEmptyState";
+import { Separator } from "@/components/ui/separator";
+import { Spinner } from "@/components/ui/spinner";
 import { fetchReceipts } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { format, isToday, isYesterday } from "date-fns";
 import { useMemo } from "react";
-import { Separator } from "../ui/separator";
-import { ReceiptEmptyState } from "../Receipt/ReceiptEmptyState";
-import { Receipt } from "../Receipt/Receipt";
-import { Spinner } from "../ui/spinner";
 
-export default function Receipts() {
+export function Receipts() {
   const { data: receipts, isLoading } = useQuery({
     queryFn: () => fetchReceipts(null, null, new Date()),
     queryKey: ["receipts"],

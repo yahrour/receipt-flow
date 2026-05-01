@@ -3,7 +3,7 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "../ui/input-group";
+} from "../../components/ui/input-group";
 import { Search, XIcon } from "lucide-react";
 import {
   Select,
@@ -13,9 +13,9 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "../../components/ui/select";
 import { RECEIPT_CATEGORIES } from "@/constants";
-import { DateNav } from "../DateNav";
+import { DateNav } from "../../components/DateNav";
 
 export function ActionBar({
   search,

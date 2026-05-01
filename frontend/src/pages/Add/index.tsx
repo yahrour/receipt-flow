@@ -5,10 +5,10 @@ import { ArrowLeft } from "lucide-react";
 import type { ReceiptSchema } from "./types";
 import Form from "./Form";
 import Upload from "./Upload";
-import AuthRequired from "../AuthRequired";
-import { Spinner } from "../ui/spinner";
+import AuthRequired from "@/components/AuthRequired";
+import { Spinner } from "@/components/ui/spinner";
 
-export default function AddReceipt() {
+export function Add() {
   const { data: session, isLoading } = useQuery({
     queryKey: ["session"],
     queryFn: () => authClient.getSession(),

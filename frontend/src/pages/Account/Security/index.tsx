@@ -2,13 +2,13 @@ import { authClient } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { useNavigate } from "react-router";
-import { Spinner } from "../../ui/spinner";
+import { Spinner } from "@/components/ui/spinner";
 import { ManageEmail } from "./ManageEmail";
 import { ManagePassword } from "./ManagePassword";
 import { ManageSessions } from "./ManageSessions";
 import type { SecuritySection } from "./types";
 
-export default function Security() {
+export function Security() {
   const { data: session, isLoading: sessionLoading } = useQuery({
     queryKey: ["session"],
     queryFn: () => authClient.getSession(),

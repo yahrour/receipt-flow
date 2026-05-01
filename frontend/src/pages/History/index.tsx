@@ -1,13 +1,13 @@
-import Receipts from "./Receipts";
 import { useState } from "react";
-import { ActionBar } from "./ActionBar";
-import { ReceiptsTable } from "./ReceiptsTable";
 import { useQuery } from "@tanstack/react-query";
 import { authClient } from "@/lib/auth";
-import { Spinner } from "../ui/spinner";
-import AuthRequired from "../AuthRequired";
+import { Spinner } from "@/components/ui/spinner";
+import AuthRequired from "@/components/AuthRequired";
+import { ActionBar } from "./ActionBar";
+import { ReceiptsTable } from "./ReceiptsTable";
+import Receipts from "./Receipts";
 
-export default function History() {
+export function History() {
   const { data: session, isLoading } = useQuery({
     queryKey: ["session"],
     queryFn: () => authClient.getSession(),

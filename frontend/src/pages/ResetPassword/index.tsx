@@ -2,8 +2,13 @@ import { resetPasswordSchema } from "@/schema";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { Field, FieldError, FieldGroup, FieldLabel } from "../ui/field";
-import { Button } from "../ui/button";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
+import { Button } from "@/components/ui/button";
 import { Link, useNavigate } from "react-router";
 import { authClient } from "@/lib/auth";
 import { useState } from "react";
@@ -12,8 +17,8 @@ import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
-} from "../ui/input-group";
-import { Spinner } from "../ui/spinner";
+} from "@/components/ui/input-group";
+import { Spinner } from "@/components/ui/spinner";
 import { useQuery } from "@tanstack/react-query";
 import type { Message } from "@/types";
 

@@ -5,14 +5,14 @@ import {
   UserPlus,
   type LucideIcon,
 } from "lucide-react";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth";
 import { useQuery } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router";
 import { ACCOUNT_TABS } from "@/constants";
 import type { UserSession } from "@/types";
 
-export default function Account() {
+export function Account() {
   const { data } = useQuery({
     queryKey: ["session"],
     queryFn: () => authClient.getSession(),
@@ -116,8 +116,7 @@ function SignMethods({ session }: { session: UserSession | null | undefined }) {
       <Button
         className="py-5 cursor-pointer w-full"
         variant="destructive"
-        // eslint-disable-next-line @typescript-eslint/no-misused-promises
-        onClick={handleSignOut}
+        onClick={() => void handleSignOut()}
       >
         <LogIn />
         Sign Out

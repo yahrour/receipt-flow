@@ -1,14 +1,14 @@
-import { DateNav } from "../DateNav";
 import { useState } from "react";
 import { Summary } from "./Summary";
 import { MonthlySpending } from "./MonthlySpending";
 import { CategorySpending } from "./CategorySpending";
 import { useQuery } from "@tanstack/react-query";
 import { authClient } from "@/lib/auth";
-import { Spinner } from "../ui/spinner";
-import AuthRequired from "../AuthRequired";
+import { Spinner } from "@/components/ui/spinner";
+import AuthRequired from "@/components/AuthRequired";
+import { DateNav } from "@/components/DateNav";
 
-export default function Stats() {
+export function Stats() {
   const { data: session, isLoading } = useQuery({
     queryKey: ["session"],
     queryFn: () => authClient.getSession(),

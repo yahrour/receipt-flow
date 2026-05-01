@@ -19,8 +19,8 @@ import type { ApiResponse, Message } from "@/types";
 import { DEFAULT_CURRENCY, RECEIPT_CATEGORIES } from "@/constants";
 import { queryClient } from "@/main";
 import { format } from "date-fns";
-import type { ReceiptSchema } from "../AddReceipt/types";
-import { DatePicker } from "../AddReceipt/DatePicker";
+import type { ReceiptSchema } from "../../pages/Add/types";
+import { DatePicker } from "../../pages/Add/DatePicker";
 import {
   Dialog,
   DialogContent,
@@ -63,7 +63,7 @@ export function EditReceiptDialog({
         <DialogHeader>
           <DialogTitle>Edit Receipt</DialogTitle>
         </DialogHeader>
-        <EditReceiptForm
+        <Form
           id={id}
           merchant={merchant}
           amount={amount}
@@ -84,7 +84,7 @@ type Props = {
   id?: number;
 };
 
-function EditReceiptForm({ merchant, amount, date, category, id }: Props) {
+function Form({ merchant, amount, date, category, id }: Props) {
   const [currency, setCurrency] = useState<string | null>(null);
   const form = useForm<ReceiptFormValues, unknown, ReceiptSchema>({
     resolver: zodResolver(receiptSchema),

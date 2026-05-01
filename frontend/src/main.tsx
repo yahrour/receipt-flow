@@ -4,19 +4,19 @@ import { createRoot } from "react-dom/client";
 import { createBrowserRouter } from "react-router";
 import { RouterProvider } from "react-router/dom";
 import { RootLayout } from "@/layouts/RootLayout";
-import Home from "@/components/Home/Home";
-import Account from "@/components/Account/Account";
+import { Home } from "@/pages/Home/index";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import SignIn from "./components/Auth/SignIn";
-import SignUp from "./components/Auth/SignUp";
 import { AuthLayout } from "./layouts/AuthLayout";
-import ForgotPassword from "./components/Auth/ForgotPassword";
-import ResetPassword from "./components/Auth/ResetPassword";
-import Security from "./components/Account/Security/Security";
-import AddReceipt from "./components/AddReceipt/AddReceipt";
-import Settings from "./components/Account/Settings/Settings";
-import Stats from "@/components/Stats/Stats";
-import History from "./components/History/History";
+import { History } from "@/pages/History/index";
+import { Add } from "./pages/Add";
+import { Stats } from "./pages/Stats";
+import { SignUp } from "./pages/SignUp";
+import { SignIn } from "./pages/SignIn";
+import { ForgotPassword } from "./pages/ForgetPassword";
+import ResetPassword from "./pages/ResetPassword";
+import { Account } from "./pages/Account";
+import { Security } from "./pages/Account/Security";
+import Settings from "./pages/Account/Settings";
 
 const router = createBrowserRouter([
   {
@@ -28,7 +28,7 @@ const router = createBrowserRouter([
       { path: "/account", Component: Account },
       { path: "/account/security", Component: Security },
       { path: "/account/settings", Component: Settings },
-      { path: "/add-receipt", Component: AddReceipt },
+      { path: "/add-receipt", Component: Add },
     ],
   },
   {

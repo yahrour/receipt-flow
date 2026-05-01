@@ -1,10 +1,10 @@
+import LoadingDots from "@/components/LoadingDots";
 import { DEFAULT_CURRENCY } from "@/constants";
 import { fetchAnalyticsSummary, fetchUserPreferences } from "@/services/api";
 import { useQuery } from "@tanstack/react-query";
 import { Calculator, Receipt } from "lucide-react";
-import LoadingDots from "../LoadingDots";
 
-export default function Summary() {
+export function Summary() {
   const { data: analytics, isLoading: isLoadingAnalytics } = useQuery({
     queryKey: ["analytics", "analyticsSummary"],
     queryFn: () => fetchAnalyticsSummary(null, null),
