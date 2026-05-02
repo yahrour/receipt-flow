@@ -24,7 +24,7 @@ const fileFilter = (
   if (config.allowedFileTypes.includes(file.mimetype)) {
     return cb(null, true);
   }
-  cb(createError(400, "Invalid file type. Only Images and PDFs are allowed."));
+  cb(createError(400, "Invalid file type. Only Images are allowed."));
 };
 
 export const upload = multer({

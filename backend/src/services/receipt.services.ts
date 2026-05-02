@@ -8,7 +8,6 @@ import z from "zod";
 import { env } from "../config/env.js";
 import sharp from "sharp";
 import fs from "fs/promises";
-import { PDFDocument } from "pdf-lib";
 import { config } from "../config/config.js";
 
 const genAI = new GoogleGenAI({ apiKey: env.GEMINI_API_KEY });
@@ -16,9 +15,11 @@ const prompt = `
 You are a specialized OCR agent for financial documents.
 Extract the receipt data accurately and return the following fields:
 - merchant: the store or business name
-- amount: the total amount paid
-- date: Use ISO 8601 format (YYYY-MM-DD). If the year is missing on the receipt, assume 2026.
-- category: classify the receipt into one of: groceries, restaurant, transport, entertainment, health, shopping, utilities, travel, or other`;
+- amount: the total amount paid as a number (e.g. 12.99). If not found, return null.
+- date: Use ISO 8601 format (YYYY-MM-DD). If the year is missing on the receipt assume 2026.
+- category: one of: groceries, restaurant, transport, entertainment, health, shopping, utilities, travel, other.
+
+If a field cannot be determined with confidence, return null. Do NOT guess.`;
 
 export async function analyzeReceiptService(
   filePath: string | undefined,
@@ -34,45 +35,41 @@ export async function analyzeReceiptService(
     const optimizedBuffer = await sharp(fileBuffer)
       .resize({ width: 1200, withoutEnlargement: true })
       .rotate()
+      .grayscale()
       .jpeg({ quality: 85 })
       .toBuffer();
     dataPart = {
       data: optimizedBuffer.toString("base64"),
       mimeType: "image/jpeg",
     };
-  } else if (mimeType === "application/pdf") {
-    const pdfDoc = await PDFDocument.load(fileBuffer, {
-      ignoreEncryption: true,
-    });
-    const pageCount = pdfDoc.getPageCount();
-    if (pageCount > 5) {
-      throw createError(400, "PDF is too long");
-    }
-    dataPart = {
-      data: fileBuffer.toString("base64"),
-      mimeType,
-    };
   } else {
     throw createError(415, "Unsupported file type");
   }
 
-  const result = await genAI.models.generateContent({
-    model: "gemini-2.5-flash",
-    config: {
-      responseJsonSchema: z.toJSONSchema(receiptSchema),
-      responseMimeType: "application/json",
-    },
-    contents: [
-      {
-        parts: [
-          { text: prompt },
-          { inlineData: { data: dataPart.data, mimeType: dataPart.mimeType } },
-        ],
+  const result = await Promise.all([
+    genAI.models.generateContent({
+      model: "gemini-2.5-flash",
+      config: {
+        responseJsonSchema: z.toJSONSchema(receiptSchema),
+        responseMimeType: "application/json",
       },
-    ],
-  });
+      contents: [
+        {
+          parts: [
+            { text: prompt },
+            {
+              inlineData: { data: dataPart.data, mimeType: dataPart.mimeType },
+            },
+          ],
+        },
+      ],
+    }),
+    new Promise((_, reject) =>
+      setTimeout(() => reject(createError(504, "AI model timed out")), 15_000),
+    ),
+  ]);
 
-  const rawText = result.text;
+  const rawText = result[0].text;
   if (!rawText || rawText.length === 0) {
     throw createError(500, "Failed to extract receipt data");
   }
