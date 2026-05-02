@@ -7,7 +7,6 @@ import { promisify } from "util";
 import {
   analyzeReceiptController,
   deleteReceiptController,
-  getReceiptController,
   getReceiptsController,
   saveReceiptController,
   updateReceiptController,
@@ -42,7 +41,6 @@ receiptsRouter.post(
   analyzeReceiptController,
 );
 receiptsRouter.get("/", authMiddleware, getReceiptsController);
-receiptsRouter.get("/:id", authMiddleware, getReceiptController);
 receiptsRouter.post("/", authMiddleware, saveReceiptController);
 receiptsRouter.put("/:id", authMiddleware, updateReceiptController);
 receiptsRouter.delete("/:id", authMiddleware, deleteReceiptController);

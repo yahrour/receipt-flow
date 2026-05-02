@@ -195,29 +195,6 @@ export async function getReceiptsService(
   }
 }
 
-export async function getReceiptService(
-  id: string | string[] | undefined,
-  userId: string,
-) {
-  const receiptId = Number(id);
-  if (!isValidId(id) || receiptId < 0) {
-    throw createError(400, "Invalid receipt id");
-  }
-
-  try {
-    const { rows } = await query(
-      "SELECT id, merchant, amount, receipt_date, category, currency FROM receipts WHERE id=$1 AND user_id=$2",
-      [receiptId, userId],
-    );
-    if (!rows[0]) {
-      throw createError(404, "Receipt doesn't exist");
-    }
-    return rows[0];
-  } catch {
-    throw createError(500, "Failed to fetch receipt");
-  }
-}
-
 export async function updateReceiptService(
   id: string | string[] | undefined,
   body: ReceiptType,

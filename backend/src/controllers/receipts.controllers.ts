@@ -6,7 +6,6 @@ import { receiptSchema } from "../schema/index.js";
 import { analyzeReceiptService } from "../services/receipt.services.js";
 import {
   deleteReceiptService,
-  getReceiptService,
   getReceiptsService,
   saveReceiptService,
   updateReceiptService,
@@ -63,19 +62,6 @@ export async function getReceiptsController(
       date,
     );
     return ok(res, result, "Receipts fetched successfully", 200);
-  } catch (e) {
-    next(e);
-  }
-}
-
-export async function getReceiptController(
-  req: Request,
-  res: Response,
-  next: NextFunction,
-) {
-  try {
-    const result = await getReceiptService(req.params.id, req.user.id);
-    return ok(res, result, "Receipt fetched successfully", 200);
   } catch (e) {
     next(e);
   }
