@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.tmp/
+.npm/
+.git/
+.gitignore
+Dockerfile
+.dockerignore
+README.md
+.husky/
+tmp/

@@ -1,6 +1,15 @@
-CREATE TYPE receipt_category AS ENUM ('groceries', 'restaurant', 'transport', 'entertainment', 'health', 'shopping', 'utilities', 'travel', 'other');
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1
+        FROM pg_type
+        WHERE typname = 'receipt_category'
+    ) THEN
+        CREATE TYPE receipt_category AS ENUM ('groceries', 'restaurant', 'transport', 'entertainment', 'health', 'shopping', 'utilities', 'travel', 'other');
+    END IF;
+END $$;
 
-CREATE TABLE receipts (
+CREATE TABLE IF NOT EXISTS receipts (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   user_id TEXT REFERENCES "user"(id) ON DELETE CASCADE NOT NULL,
   merchant VARCHAR(255) NOT NULL,
@@ -11,7 +20,7 @@ CREATE TABLE receipts (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE user_preferences (
+CREATE TABLE IF NOT EXISTS user_preferences (
   id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
   user_id TEXT REFERENCES "user"(id) ON DELETE CASCADE NOT NULL,
   currency VARCHAR(25) DEFAULT 'USD',

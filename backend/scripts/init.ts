@@ -1,7 +1,11 @@
 import { execSync } from "child_process";
 import fs from "fs";
-import path from "path";
 import { Pool } from "pg";
+import { fileURLToPath } from "url";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 async function setupDb() {
   console.log("[INFO] Start Setup Database");
@@ -11,7 +15,7 @@ async function setupDb() {
     execSync("echo y | npx auth@latest migrate", {
       stdio: "inherit",
     });
-    console.log("[INFO] BETTER-AUTH Migration Succeded");
+    console.log("[INFO] BETTER-AUTH Migration Succeeded");
 
     console.log("[INFO] Create App Required Tables");
     const pool = new Pool({
@@ -23,7 +27,7 @@ async function setupDb() {
     });
 
     const initSqlFile = fs.readFileSync(
-      path.join("__dirname", "../database/init.sql"),
+      path.join(__dirname, "../database/init.sql"),
       "utf8",
     );
 

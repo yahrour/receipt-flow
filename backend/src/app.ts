@@ -55,6 +55,6 @@ app.use((err: HttpError, req: Request, res: Response, next: NextFunction) => {
   return fail(res, message, status);
 });
 
-app.listen(env.PORT, () => {
+app.listen(env.PORT, env.HOST, () => {
   console.log(`Server running on port ${env.PORT} in ${env.NODE_ENV} mode`);
 });

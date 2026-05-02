@@ -6,7 +6,7 @@ import fs from "fs";
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    const tmpDir = "tmp/";
+    const tmpDir = "/tmp/uploads/";
     fs.mkdirSync(tmpDir, { recursive: true }); // Create tmp folder if not exists
     cb(null, tmpDir);
   },
