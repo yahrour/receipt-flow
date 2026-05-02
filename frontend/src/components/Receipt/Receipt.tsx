@@ -54,9 +54,11 @@ export function Receipt({ receipt, firstOne, lastOne }: Props) {
       setOffset(0);
       setRevealed(false);
     },
-    preventScrollOnSwipe: true,
     trackMouse: true,
     trackTouch: true,
+    delta: { up: 10000, down: 10000, left: 10, right: 10 }, // ignore vertical swipes entirely
+    preventScrollOnSwipe: true,
+    swipeDuration: 500,
   });
 
   const handleDelete = async (id: number) => {

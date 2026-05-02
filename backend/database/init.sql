@@ -28,3 +28,20 @@ CREATE TABLE IF NOT EXISTS user_preferences (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT unique_preference UNIQUE (user_id)
 );
+
+-- Function that runs when a new user is created
+CREATE OR REPLACE FUNCTION create_default_user_preferences()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO user_preferences (user_id, currency)
+  VALUES (NEW.id, 'USD')
+  ON CONFLICT (user_id) DO NOTHING;
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Attach the trigger to the user table
+CREATE OR REPLACE TRIGGER on_user_created
+  AFTER INSERT ON "user"
+  FOR EACH ROW
+  EXECUTE FUNCTION create_default_user_preferences();
