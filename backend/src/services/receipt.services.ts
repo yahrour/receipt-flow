@@ -46,30 +46,25 @@ export async function analyzeReceiptService(
     throw createError(415, "Unsupported file type");
   }
 
-  const result = await Promise.all([
-    genAI.models.generateContent({
-      model: "gemini-2.5-flash",
-      config: {
-        responseJsonSchema: z.toJSONSchema(receiptSchema),
-        responseMimeType: "application/json",
+  const result = await genAI.models.generateContent({
+    model: "gemini-2.5-flash",
+    config: {
+      responseJsonSchema: z.toJSONSchema(receiptSchema),
+      responseMimeType: "application/json",
+    },
+    contents: [
+      {
+        parts: [
+          { text: prompt },
+          {
+            inlineData: { data: dataPart.data, mimeType: dataPart.mimeType },
+          },
+        ],
       },
-      contents: [
-        {
-          parts: [
-            { text: prompt },
-            {
-              inlineData: { data: dataPart.data, mimeType: dataPart.mimeType },
-            },
-          ],
-        },
-      ],
-    }),
-    new Promise((_, reject) =>
-      setTimeout(() => reject(createError(504, "AI model timed out")), 15_000),
-    ),
-  ]);
+    ],
+  });
 
-  const rawText = result[0].text;
+  const rawText = result.text;
   if (!rawText || rawText.length === 0) {
     throw createError(500, "Failed to extract receipt data");
   }
