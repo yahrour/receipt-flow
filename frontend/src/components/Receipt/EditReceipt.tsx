@@ -46,8 +46,14 @@ export function EditReceiptDialog({
   close?: () => void;
   showLabel?: boolean;
 }) {
+  const [isOpen, setIsOpen] = useState(false);
   return (
-    <Dialog>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+      }}
+    >
       <DialogTrigger
         onClick={() => {
           close?.();
@@ -69,6 +75,7 @@ export function EditReceiptDialog({
           amount={amount}
           category={category}
           date={date}
+          setIsOpen={setIsOpen}
         />
       </DialogContent>
     </Dialog>
@@ -82,9 +89,10 @@ type Props = {
   date?: Date;
   category?: (typeof RECEIPT_CATEGORIES)[number];
   id?: number;
+  setIsOpen: (open: boolean) => void;
 };
 
-function Form({ merchant, amount, date, category, id }: Props) {
+function Form({ merchant, amount, date, category, id, setIsOpen }: Props) {
   const [currency, setCurrency] = useState<string | null>(null);
   const form = useForm<ReceiptFormValues, unknown, ReceiptSchema>({
     resolver: zodResolver(receiptSchema),
@@ -163,7 +171,7 @@ function Form({ merchant, amount, date, category, id }: Props) {
   const mutation = useMutation({
     mutationFn: saveReceipt,
     onSuccess: async () => {
-      form.reset();
+      setIsOpen(false);
       await queryClient.invalidateQueries({ queryKey: ["receipts"] });
       void navigate("/");
     },

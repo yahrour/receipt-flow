@@ -63,7 +63,6 @@ export function Receipt({ receipt, firstOne, lastOne }: Props) {
 
   const handleDelete = async (id: number) => {
     const toastId = toast.loading("Deleting...", {
-      autoClose: 500,
       closeOnClick: true,
       draggable: true,
       position: "top-center",
@@ -71,12 +70,14 @@ export function Receipt({ receipt, firstOne, lastOne }: Props) {
     const result = await mutate.mutateAsync(id);
     if (result?.success) {
       toast.update(toastId, {
+        autoClose: 2000,
         render: "Receipt deleted",
         type: "success",
         isLoading: false,
       });
     } else {
       toast.update(toastId, {
+        autoClose: 2000,
         render: "Failed to delete receipt",
         type: "error",
         isLoading: false,
