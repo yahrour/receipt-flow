@@ -31,7 +31,7 @@ ReceiptFlow is an AI-powered financial organizer that transforms messy paper rec
 
 ## Demo
 
-https://github.com/user-attachments/assets/d2d67720-866b-42dd-b1b8-1b54748aa7bb
+https://github.com/user-attachments/assets/453b0aa4-7dad-4bc3-9291-c688a92c7785
 
 ## Getting started
 
