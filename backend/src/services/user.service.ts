@@ -13,9 +13,7 @@ export async function updateEmailService({
   currentPassword: string;
   headers: IncomingHttpHeaders;
 }) {
-  console.log("Updating email for user with new email:", newEmail);
   try {
-    console.log("Verifying password for user");
     await auth.api.verifyPassword({
       body: { password: currentPassword },
       headers: fromNodeHeaders(headers),
@@ -23,7 +21,6 @@ export async function updateEmailService({
   } catch {
     throw createError(400, "Incorrect Password");
   }
-  console.log("Password verified, updating email");
 
   try {
     await auth.api.changeEmail({
@@ -33,7 +30,6 @@ export async function updateEmailService({
       },
       headers: fromNodeHeaders(headers),
     });
-    console.log("Email updated successfully");
   } catch {
     throw createError(500, "Failed to update email");
   }
