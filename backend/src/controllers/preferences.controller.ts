@@ -3,7 +3,7 @@ import { ok } from "../utils/response.js";
 import {
   GetPreferencesService,
   UpdatePreferencesService,
-} from "../services/preferences.services.js";
+} from "../services/preferences.service.js";
 
 export async function UpdatePreferencesController(
   req: Request,

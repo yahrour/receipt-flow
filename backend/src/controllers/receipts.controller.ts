@@ -3,13 +3,13 @@ import fs from "fs/promises";
 import createError from "http-errors";
 import z from "zod";
 import { receiptSchema } from "../schema/index.js";
-import { analyzeReceiptService } from "../services/receipt.services.js";
 import {
+  analyzeReceiptService,
   deleteReceiptService,
   getReceiptsService,
   saveReceiptService,
   updateReceiptService,
-} from "../services/receipt.services.js";
+} from "../services/receipt.service.js";
 import { ok } from "../utils/response.js";
 
 export type ReceiptType = z.infer<typeof receiptSchema>;

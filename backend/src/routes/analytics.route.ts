@@ -4,7 +4,7 @@ import {
   categoriesSpendingController,
   monthlySummaryController,
   yearlySpendingController,
-} from "../controllers/analytics.controllers.js";
+} from "../controllers/analytics.controller.js";
 
 export const analyticsRouter = Router();
 

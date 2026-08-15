@@ -7,12 +7,12 @@ import type { Request, Response, NextFunction } from "express";
 import type { HttpError } from "http-errors";
 import { auth } from "./lib/auth.js";
 import cors from "cors";
-import { healthRouter } from "./routes/health.routes.js";
+import { healthRouter } from "./routes/health.route.js";
 import { fail } from "./utils/response.js";
-import { receiptsRouter } from "./routes/receipts.routes.js";
-import { analyticsRouter } from "./routes/analytics.routes.js";
-import { userRouter } from "./routes/user.routes.js";
-import { preferencesRouter } from "./routes/preferences.routes.js";
+import { receiptsRouter } from "./routes/receipts.route.js";
+import { analyticsRouter } from "./routes/analytics.route.js";
+import { userRouter } from "./routes/user.route.js";
+import { preferencesRouter } from "./routes/preferences.route.js";
 
 const app = express();
 

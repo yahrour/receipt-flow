@@ -3,7 +3,7 @@ import { authMiddleware } from "../middlewares/auth.middleware.js";
 import {
   GetPreferencesController,
   UpdatePreferencesController,
-} from "../controllers/preferences.controllers.js";
+} from "../controllers/preferences.controller.js";
 
 export const preferencesRouter = Router();
 

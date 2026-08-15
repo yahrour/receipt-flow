@@ -1,7 +1,7 @@
 import { receiptSchema } from "../schema/index.js";
 import createError from "http-errors";
 import { query } from "../lib/db.js";
-import type { ReceiptType } from "../controllers/receipts.controllers.js";
+import type { ReceiptType } from "../controllers/receipts.controller.js";
 import { isValidId } from "../utils/index.js";
 import { GoogleGenAI } from "@google/genai";
 import z from "zod";
@@ -146,14 +146,14 @@ export async function getReceiptsService(
       );
     } else {
       result = await query(
-        `SELECT id, merchant, amount, receipt_date, category, currency 
-        FROM receipts 
+        `SELECT id, merchant, amount, receipt_date, category, currency
+        FROM receipts
         WHERE user_id=$1
         AND receipt_date >= $2
         AND receipt_date < $3
         AND ($4::text IS NULL OR LOWER(merchant) LIKE LOWER($4))
-        AND ($5::text IS NULL OR LOWER(category::text) LIKE LOWER($5)) 
-        ORDER BY id DESC 
+        AND ($5::text IS NULL OR LOWER(category::text) LIKE LOWER($5))
+        ORDER BY id DESC
         LIMIT $6`,
         [
           userId,

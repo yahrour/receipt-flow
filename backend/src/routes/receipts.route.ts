@@ -10,7 +10,7 @@ import {
   getReceiptsController,
   saveReceiptController,
   updateReceiptController,
-} from "../controllers/receipts.controllers.js";
+} from "../controllers/receipts.controller.js";
 import { authMiddleware } from "../middlewares/auth.middleware.js";
 
 export const receiptsRouter = express.Router();

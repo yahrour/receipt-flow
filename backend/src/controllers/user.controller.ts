@@ -2,7 +2,7 @@ import type { NextFunction, Request, Response } from "express";
 import { ok } from "../utils/response.js";
 import z from "zod";
 import { updateEmailSchema } from "../schema/index.js";
-import { updateEmailService } from "../services/user.services.js";
+import { updateEmailService } from "../services/user.service.js";
 import createError from "http-errors";
 
 export async function changeEmailController(

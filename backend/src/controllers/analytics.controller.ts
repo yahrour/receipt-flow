@@ -3,7 +3,7 @@ import {
   getCategoriesSpending,
   getYearlySpending,
   getMonthlySummary,
-} from "../services/analytics.services.js";
+} from "../services/analytics.service.js";
 import { ok } from "../utils/response.js";
 import createError from "http-errors";
 
