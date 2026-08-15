@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from "express";
-import { ok } from "../utils/response.js";
+import { ok } from "../utils/index.js";
 import {
   GetPreferencesService,
   UpdatePreferencesService,

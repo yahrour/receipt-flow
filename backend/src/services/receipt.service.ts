@@ -1,6 +1,6 @@
 import { receiptSchema } from "../schema/index.js";
 import createError from "http-errors";
-import { query } from "../lib/db.js";
+import { query } from "../lib/index.js";
 import type { ReceiptType } from "../controllers/receipts.controller.js";
 import { isValidId } from "../utils/index.js";
 import { GoogleGenAI } from "@google/genai";

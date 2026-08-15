@@ -1,6 +1,6 @@
 import express from "express";
 import type { NextFunction, Request, Response } from "express";
-import { upload } from "../lib/multer.js";
+import { upload } from "../lib/index.js";
 import createError from "http-errors";
 import z from "zod";
 import { promisify } from "util";

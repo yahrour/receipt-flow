@@ -4,7 +4,7 @@ import {
   getYearlySpending,
   getMonthlySummary,
 } from "../services/analytics.service.js";
-import { ok } from "../utils/response.js";
+import { ok } from "../utils/index.js";
 import createError from "http-errors";
 
 export async function monthlySummaryController(

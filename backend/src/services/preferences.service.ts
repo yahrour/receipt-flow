@@ -1,7 +1,7 @@
 import z from "zod";
 import { userPreferencesSchema } from "../schema/index.js";
 import createError from "http-errors";
-import { query } from "../lib/db.js";
+import { query } from "../lib/index.js";
 
 type UserPreferencesSchema = z.infer<typeof userPreferencesSchema>;
 export async function UpdatePreferencesService(

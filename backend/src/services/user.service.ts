@@ -1,5 +1,5 @@
 import { fromNodeHeaders } from "better-auth/node";
-import { auth } from "../lib/auth.js";
+import { auth } from "../lib/index.js";
 import createError from "http-errors";
 import type { IncomingHttpHeaders } from "node:http";
 import { env } from "../config/env.js";

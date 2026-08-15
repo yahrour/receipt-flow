@@ -10,7 +10,7 @@ import {
   saveReceiptService,
   updateReceiptService,
 } from "../services/receipt.service.js";
-import { ok } from "../utils/response.js";
+import { ok } from "../utils/index.js";
 
 export type ReceiptType = z.infer<typeof receiptSchema>;
 
