@@ -2,7 +2,9 @@ import { jest, describe, beforeEach, it, expect } from "@jest/globals";
 import createError from "http-errors";
 
 const mockQuery =
-  jest.fn<(query: string, params?: any[]) => Promise<{ rows: any[] }>>();
+  jest.fn<
+    (query: string, params?: unknown[]) => Promise<{ rows: unknown[] }>
+  >();
 
 jest.unstable_mockModule("../../src/lib/index.ts", () => ({
   query: mockQuery,
@@ -13,7 +15,7 @@ const { UpdatePreferencesService, GetPreferencesService } =
 
 const USER_ID = "user-1";
 
-const rows = (...rows: any[]) => ({ rows });
+const rows = (...rows: unknown[]) => ({ rows });
 
 describe("preferences service", () => {
   beforeEach(() => {
@@ -41,7 +43,7 @@ describe("preferences service", () => {
 
     it("throws a 500 error when the body fails schema validation", async () => {
       await expect(
-        UpdatePreferencesService(USER_ID, {} as any),
+        UpdatePreferencesService(USER_ID, {} as unknown),
       ).rejects.toMatchObject({ status: 500 });
     });
 

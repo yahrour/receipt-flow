@@ -1,8 +1,8 @@
 import { jest, describe, beforeEach, it, expect } from "@jest/globals";
 
-const mockVerifyPassword = jest.fn<(args: any) => Promise<any>>();
-const mockChangeEmail = jest.fn<(args: any) => Promise<any>>();
-const mockFromNodeHeaders = jest.fn<(headers: any) => any>();
+const mockVerifyPassword = jest.fn<(args: unknown) => Promise<unknown>>();
+const mockChangeEmail = jest.fn<(args: unknown) => Promise<unknown>>();
+const mockFromNodeHeaders = jest.fn<(headers: unknown) => unknown>();
 
 jest.unstable_mockModule("../../src/lib/index.ts", () => ({
   auth: {
@@ -26,7 +26,7 @@ describe("user service", () => {
     mockVerifyPassword.mockReset();
     mockChangeEmail.mockReset();
     mockFromNodeHeaders.mockReset();
-    mockFromNodeHeaders.mockImplementation((h: any) => h);
+    mockFromNodeHeaders.mockImplementation((h: unknown) => h);
   });
 
   describe("updateEmailService", () => {

@@ -1,0 +1,75 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-backend:
+    name: Backend (type-check + unit tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Type-check
+        run: npm run type-check
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Run unit tests
+        run: npm run test:coverage
+        env:
+          NODE_ENV: test
+          BETTER_AUTH_SECRET: ci-only-secret
+          BETTER_AUTH_URL: http://localhost:3000
+          DB_HOST: localhost
+          DB_PORT: "5432"
+          DB_USER: ci
+          DB_PASSWORD: ci
+          DB_NAME: ci_test
+          GEMINI_API_KEY: ci-only-key
+          FRONTEND_URL: http://localhost:5173
+          GOOGLE_CLIENT_ID: ci
+          GOOGLE_CLIENT_SECRET: ci
+          RESEND_API_KEY: ci
+
+  build-frontend:
+    name: Build frontend
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build

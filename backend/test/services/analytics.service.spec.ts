@@ -1,7 +1,9 @@
 import { jest, describe, beforeEach, it, expect } from "@jest/globals";
 
 const mockQuery =
-  jest.fn<(query: string, params?: any[]) => Promise<{ rows: any[] }>>();
+  jest.fn<
+    (query: string, params?: unknown[]) => Promise<{ rows: unknown[] }>
+  >();
 
 jest.unstable_mockModule("../../src/lib/index.ts", () => ({
   query: mockQuery,
@@ -14,12 +16,13 @@ const USER_ID = "user-1";
 const YEAR = 2026;
 const MONTH = 6;
 
-const rows = (...rows: any[]) => ({ rows });
-const expectCalledWith = (fragment: string, params: any[]) =>
+const rows = (...rows: unknown[]) => ({ rows });
+const expectCalledWith = (fragment: string, params: unknown[]) => {
   expect(mockQuery).toHaveBeenCalledWith(
     expect.stringContaining(fragment),
     params,
   );
+};
 
 describe("analytics service", () => {
   beforeEach(() => {

@@ -1,18 +1,17 @@
 import { jest, describe, beforeEach, it, expect } from "@jest/globals";
-import createError from "http-errors";
 import { ZodError } from "zod";
 
 const mockQuery =
   jest.fn<
     (
       query: string,
-      params?: any[],
-    ) => Promise<{ rows: any[]; rowCount?: number | null }>
+      params?: unknown[],
+    ) => Promise<{ rows: unknown[]; rowCount?: number | null }>
   >();
 const mockReadFile = jest.fn<() => Promise<Buffer>>();
 const mockToBuffer = jest.fn<() => Promise<Buffer>>();
 const mockGenerateContent =
-  jest.fn<(args: any) => Promise<{ text?: string | null }>>();
+  jest.fn<(args: unknown) => Promise<{ text?: string | null }>>();
 
 jest.unstable_mockModule("../../src/lib/index.ts", () => ({
   query: mockQuery,
@@ -57,7 +56,7 @@ const validReceipt = {
   currency: "USD",
 };
 
-const queryResult = (rows: any[], rowCount?: number | null) => ({
+const queryResult = (rows: unknown[], rowCount?: number | null) => ({
   rows,
   rowCount: rowCount ?? rows.length,
 });
@@ -139,7 +138,7 @@ describe("receipt service", () => {
 
     it("throws a 400 error for an invalid receipt", async () => {
       await expect(
-        saveReceiptService({ merchant: "Starbucks" } as any, USER_ID),
+        saveReceiptService({ merchant: "Starbucks" } as unknown, USER_ID),
       ).rejects.toMatchObject({ status: 400 });
     });
 
@@ -238,7 +237,11 @@ describe("receipt service", () => {
 
     it("throws a 400 error for an invalid receipt body", async () => {
       await expect(
-        updateReceiptService("1", { merchant: "Starbucks" } as any, USER_ID),
+        updateReceiptService(
+          "1",
+          { merchant: "Starbucks" } as unknown,
+          USER_ID,
+        ),
       ).rejects.toMatchObject({ status: 400 });
     });
 
