@@ -50,7 +50,7 @@ describe("user service", () => {
         expect.objectContaining({
           body: {
             newEmail: "new@example.com",
-            callbackURL: process.env.FRONTEND_URL + "/account/security",
+            callbackURL: "http://localhost:5173/account/security",
           },
         }),
       );
