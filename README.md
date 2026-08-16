@@ -1,5 +1,7 @@
 # ReceiptsFlow
 
+[![CI](https://github.com/yahrour/receipt-flow/actions/workflows/ci.yml/badge.svg)](https://github.com/yahrour/receipt-flow/actions/workflows/ci.yml)
+
 ReceiptFlow is an AI-powered financial organizer that transforms messy paper receipts into structured, searchable data. By leveraging Google Gemini 2.5 Flash, the app automatically extracts merchant details, amounts, and dates with high accuracy.
 
 ## Features
@@ -19,13 +21,15 @@ ReceiptFlow is an AI-powered financial organizer that transforms messy paper rec
 - **Database:** PostgreSQL
 - **AI:** Google Gemini 2.5 Flash API
 - **Image processing:** Sharp (for server-side optimization/resizing)
+- **CI/CD:** GitHub Actions (type-check, lint, unit tests, frontend build)
+- **Testing:** Jest + ts-jest (~98% service-layer coverage)
 
 ## Project structure
 
 ```
 /
-├── client/             # React frontend
-├── server/             # Express backend
+├── frontend/             # React frontend
+├── backend/             # Express backend
 └── docker-compose.yml
 ```
 
@@ -64,6 +68,7 @@ The app will be running at `http://localhost:8080`.
 
 - **Pagination**: Implemented Cursor-based Pagination to ensure high query performance and prevent "data shifting" bugs.
 - **Image Optimization**: Uses Sharp to compress and resize images before processing to reduce AI token costs and improve latency.
+- **CI/CD**: GitHub Actions runs TypeScript type-check, ESLint, Jest unit tests and the frontend production build on every push and pull request.
 
 ## Notes
 
