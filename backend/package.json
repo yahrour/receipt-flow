@@ -13,9 +13,9 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "prepare": "husky",
-    "test": "node --experimental-vm-modules --env-file .env node_modules/.bin/jest",
-    "test:watch": "node --experimental-vm-modules --env-file .env node_modules/.bin/jest --watch",
-    "test:coverage": "node --experimental-vm-modules --env-file .env node_modules/.bin/jest --coverage"
+    "test": "node --experimental-vm-modules --env-file-if-exists .env node_modules/.bin/jest",
+    "test:watch": "node --experimental-vm-modules --env-file-if-exists .env node_modules/.bin/jest --watch",
+    "test:coverage": "node --experimental-vm-modules --env-file-if-exists .env node_modules/.bin/jest --coverage"
   },
   "type": "module",
   "lint-staged": {
