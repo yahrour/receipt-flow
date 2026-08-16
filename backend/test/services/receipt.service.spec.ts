@@ -138,6 +138,7 @@ describe("receipt service", () => {
 
     it("throws a 400 error for an invalid receipt", async () => {
       await expect(
+        // @ts-expect-error
         saveReceiptService({ merchant: "Starbucks" } as unknown, USER_ID),
       ).rejects.toMatchObject({ status: 400 });
     });
@@ -239,6 +240,7 @@ describe("receipt service", () => {
       await expect(
         updateReceiptService(
           "1",
+          // @ts-expect-error
           { merchant: "Starbucks" } as unknown,
           USER_ID,
         ),
