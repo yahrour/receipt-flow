@@ -43,7 +43,7 @@ describe("preferences service", () => {
 
     it("throws a 500 error when the body fails schema validation", async () => {
       await expect(
-        // @ts-expect-error
+        // @ts-expect-error ignore
         UpdatePreferencesService(USER_ID, {} as unknown),
       ).rejects.toMatchObject({ status: 500 });
     });
